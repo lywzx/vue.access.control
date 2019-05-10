@@ -1,0 +1,43 @@
+{
+  "name": "vue.access.control",
+  "version": "1.0.0",
+  "description": "vue access control",
+  "main": "dist/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lywzx/vue.access.control.git"
+  },
+  "keywords": [
+    "vue",
+    "access",
+    "control",
+    "acl"
+  ],
+  "author": "liuyang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lywzx/vue.access.control/issues"
+  },
+  "homepage": "https://github.com/lywzx/vue.access.control#readme",
+  "dependencies": {
+    "@lywzx/access.control": "^1.0.0",
+    "lodash": "^4.17.11"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.125",
+    "chai": "^4.2.0",
+    "eslint-config-prettier": "^4.2.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslit": "^6.0.0",
+    "mocha": "^6.1.4",
+    "typescript": "^3.4.5",
+    "vue": "^2.6.10",
+    "vue-router": "^3.0.6"
+  }
+}
