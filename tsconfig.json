@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": true,
+    "sourceMap": true,
+    "types" : ["node"],
+    "allowSyntheticDefaultImports": true
+  },
+  "typedocOptions": {
+    "mode": "modules",
+    "out": "docs"
+  }
+}

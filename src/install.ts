@@ -1,6 +1,5 @@
-import Vue from 'vue';
-import VAccess from './directives/VAccess';
+import { Vue } from "vue-property-decorator";
 
-export const installFn = function(Vue: Vue) {
-    
+export const installFn = function(vue: Vue) {
+
 }
