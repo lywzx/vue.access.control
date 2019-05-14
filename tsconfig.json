@@ -10,7 +10,11 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/**/*.vue"
+  ],
+  "exclude": [
+    "node_modules"
   ],
   "typedocOptions": {
     "mode": "modules",

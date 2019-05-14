@@ -1,2 +1,2 @@
 
-export { default as Access } from './VAccess';
+export { default as AccessIf } from './VAccessIf';
