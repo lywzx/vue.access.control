@@ -9,6 +9,9 @@
     "types" : ["node"],
     "allowSyntheticDefaultImports": true
   },
+  "include": [
+    "src/**/*"
+  ],
   "typedocOptions": {
     "mode": "modules",
     "out": "docs"
