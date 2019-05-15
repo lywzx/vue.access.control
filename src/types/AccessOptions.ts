@@ -1,5 +1,7 @@
+import { RawLocation } from "vue-router/types/router";
 
 export default interface AccessOptions {
   foreignKeyName: string,
-  notLoginRoleName: string
+  notLoginRoleName: string,
+  loginRoute?: RawLocation
 }

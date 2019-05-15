@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div v-for="(permission, roleName) in permissions" :key="roleName">
+    <div v-for="(permission, roleName) in permissions" :key="roleName" v-if="$access.hasRole(roleName)">
       <divider orientation="left">{{roles[roleName].roleName}}</divider>
       <div class="permission-list">
-        <a-button class="permission-item" type="primary" v-for="(per, index) in permission" :key="index" v-access-if="per.permissions" :disabled="false" :title="per.permission">{{per.permissionName}}</a-button>
+        <a-button class="permission-item" type="primary" v-for="(per, index) in permission" :key="index" :disabled="!$access.hasRole(roleName)" :title="per.permission">{{per.permissionName}}</a-button>
       </div>
     </div>
   </div>

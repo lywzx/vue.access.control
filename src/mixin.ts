@@ -1,9 +1,9 @@
 import { Vue as VueConstructor } from "vue-property-decorator";
+import { Access } from "./Access";
 
 class VueExtendConstructor extends VueConstructor {
   $options: any;
-  $store?: any;
-  $access?: any;
+  $access?: Access;
 }
 
 export default function (Vue: typeof VueConstructor) {
@@ -25,9 +25,8 @@ export default function (Vue: typeof VueConstructor) {
 
   function accessInit(this: VueExtendConstructor) {
     const options = this.$options;
-
     if (options.access) {
-      this.$store = typeof options.access === 'function'
+      this.$access = typeof options.access === 'function'
         ? options.access()
         : options.access
     } else if (options.parent && options.parent.$access) {

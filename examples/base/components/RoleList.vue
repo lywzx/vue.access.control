@@ -45,12 +45,24 @@
     },
     data() {
       return {
-        selected: []
+        selected: [
+          'Guest'
+        ]
       }
     },
     computed: {
       roles() {
         return Object.freeze(Roles);
+      }
+    },
+    watch: {
+      selected(newVal){
+        this.$access.setRole(newVal.map(function(item) {
+          return {
+            role: item,
+            permissions: []
+          };
+        }));
       }
     },
     created() {
