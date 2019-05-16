@@ -15,9 +15,10 @@ const beforeEach: NavigationGuard = function(this: VueRouter, to: Route, from: R
   let routerMiddleWare: RouterMiddleware = <RouterMiddleware> access.accessRouterMiddleware;
   let meta: any = to.meta;
 
-  let routerFn = routerMiddleWare.getMiddleWareFn(meta.middleware || [], next);
-
-  routerFn();
+  routerMiddleWare.runMiddleware({
+    middleware: meta.middleware || [],
+    next: next
+  }, this, to, from);
 };
 
 export default beforeEach;

@@ -1,4 +1,4 @@
-import { RouteConfig } from "vue-router/types/router";
+import { RouteConfig, VueRouter, Route } from "vue-router/types/router";
 import RouterMiddlewareConstructorOptions from "../types/RouterMiddlewareConstructorOptions";
 import defaultMiddleWares from './middle/index';
 import MiddleWares from "../types/MiddleWares";
@@ -60,8 +60,8 @@ export default class RouterMiddleware {
 
     let pipLine = new PipeLine(this.getMiddleFn(middles));
 
-    return function() {
-      pipLine.run();
+    return function(to: any, from: any) {
+      pipLine.pipe(to, from);
     }
   }
 
@@ -100,4 +100,17 @@ export default class RouterMiddleware {
     });
   }
 
+
+  public runMiddleware(options:{
+    middleware: string[],
+    next: Function
+  }, scope: VueRouter, to: Route, from: Route ) {
+    let {
+      middleware,
+      next
+    } = options;
+    let middlewFn = this.getMiddleWareFn(middleware, next);
+
+    middlewFn.call(scope, to, from);
+  }
 }

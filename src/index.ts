@@ -6,11 +6,13 @@ import {
   beforeEach,
   afterEach
 } from './router/index';
+import RouterMiddleware from './router/RouterMiddleware';
 
 
 export default {
   install,
-  Access
+  Access,
+  RouterMiddleware
 };
 
 export {
