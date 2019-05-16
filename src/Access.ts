@@ -16,6 +16,8 @@ import {
 } from "@lywzx/access.control/dist/types/Types";
 import { Post } from "@lywzx/access.control/dist/types/Post";
 import { getRole, standardize } from "@lywzx/access.control/dist/Util";
+import AccessConstructorOptions from "./types/AccessConstructorOptions";
+import RouterMiddleware from "./router/RouterMiddleware";
 
 let Vue: typeof VueConstructor;
 
@@ -24,7 +26,7 @@ export class Access {
   /**
    * a vue instance
    */
-  public _vm: VueConstructor | null;
+  public _vm: VueConstructor;
 
   /**
    *
@@ -37,7 +39,8 @@ export class Access {
    */
   static defaultOptions: AccessOptions = {
     foreignKeyName: 'user_id',
-    notLoginRoleName: 'Guest'
+    notLoginRoleName: 'Guest',
+    vueRouter: false
   };
 
 
@@ -46,7 +49,12 @@ export class Access {
    */
   public accessUserOptions: AccessUserOptions;
 
-  public constructor() {
+  /**
+   * router middleware
+   */
+  public accessRouterMiddleware?: RouterMiddleware;
+
+  public constructor(options: AccessConstructorOptions) {
     // Auto install if it is not done yet and `window` has `Vue`.
     // To allow users to avoid auto-installation in some cases,
     // this code should be placed here. See #731
@@ -75,6 +83,13 @@ export class Access {
     });
 
     this._vm = resetUserInfoVm(this, this.accessUserOptions);
+
+    // resolve router access
+    if ( Access.defaultOptions.vueRouter ) {
+      this.accessRouterMiddleware = new RouterMiddleware(this, {routes: options.routes || []});
+    }
+
+
   }
 
 
@@ -119,7 +134,7 @@ export class Access {
    * set permission
    * @param {string | string[]} permissions
    */
-  public appendPermission(permissions: string | string[]) {
+  public appendPermission(permissions: string | string[]): void {
     this.accessUserOptions.permissions = this.accessUserOptions.permissions.concat(standardize(permissions));
   }
 
@@ -144,7 +159,7 @@ export class Access {
    * @param {boolean} requiredAll
    * @returns {boolean}
    */
-  public hasRole(role: StringOrStringArray, requiredAll: boolean = false) {
+  public hasRole(role: StringOrStringArray, requiredAll: boolean = false):boolean {
     let user = this.getUser();
     if (user) {
       return user.hasRole(role, requiredAll);
@@ -224,6 +239,50 @@ export class Access {
       return user.ability(roles, permissions, options);
     }
     return false;
+  }
+
+  /**
+   *
+   * @param {string} event
+   * @param args
+   * @returns {this}
+   */
+  public $emit(event: string, ...args: any[]){
+    this._vm.$emit(event, ...args);
+    return this;
+  }
+
+  /**
+   *
+   * @param {string | string[]} event
+   * @param {Function} callback
+   * @returns {this}
+   */
+  public $on(event: string | string[], callback: Function){
+    this._vm.$on(event, callback);
+    return this;
+  }
+
+  /**
+   *
+   * @param {string | string[]} event
+   * @param {Function} callback
+   * @returns {this}
+   */
+  public $once(event: string | string[], callback: Function) {
+    this._vm.$on(event, callback);
+    return this;
+  }
+
+  /**
+   *
+   * @param {string | string[]} event
+   * @param {Function} callback
+   * @returns {this}
+   */
+  public $off(event?: string | string[], callback?: Function) {
+    this._vm.$off(event, callback);
+    return this;
   }
 
   /**

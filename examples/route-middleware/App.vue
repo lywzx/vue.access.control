@@ -1,10 +1,17 @@
 <template>
-    <div>1</div>
+  <section>
+    <cm-header></cm-header>
+    <router-view></router-view>
+  </section>
 </template>
 <script>
-export default {
-    
-}
+  import CmHeader from './views/Header/Index';
+
+  export default {
+    components: {
+      CmHeader
+    }
+  }
 </script>
 <style>
 
