@@ -19,17 +19,15 @@ export default class PipeLine {
   private pipeFn() {
     let funcs: Function[] = clone(this.funs);
     return function(scope: any) {
-      return function() {
-        (function next() {
-          if (funcs.length > 0) {
-            (funcs.shift() as Function).apply(scope || {}, [next].concat(Array.prototype.slice.call(arguments, 0)));
-          }
-        })();
-      };
+      (function next() {
+        if (funcs.length > 0) {
+          (funcs.shift() as Function).apply(scope || {}, [next].concat(Array.prototype.slice.call(arguments, 0)));
+        }
+      })();
     };
   }
 
-  public pipe(to: any, from: any): void {
-    this.buildMethod(to, from);
+  public pipe(callback: Function, ...args: any[]): void | Promise<any> {
+    this.buildMethod(...args);
   }
 }
