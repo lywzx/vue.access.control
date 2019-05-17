@@ -8,9 +8,9 @@
   },
   "scripts": {
     "dev": "node examples/server.js",
-    "test": "mocha --reporter spec",
+    "test": "mocha --require ts-node/register test/*.ts",
     "build": "tsc",
-    "lint": "eslint . --fix"
+    "lint": "eslint src --ext .ts --fix"
   },
   "repository": {
     "type": "git",
@@ -29,11 +29,13 @@
   },
   "homepage": "https://github.com/lywzx/vue.access.control#readme",
   "dependencies": {
-    "@lywzx/access.control": "^1.0.0",
+    "@lywzx/access.control": "^1.0.1",
     "lodash": "^4.17.11"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.7",
     "@types/lodash": "^4.14.125",
+    "@types/mocha": "^5.2.6",
     "@types/node": "^12.0.0",
     "@typescript-eslint/eslint-plugin": "^1.7.0",
     "@typescript-eslint/parser": "^1.7.0",
@@ -49,12 +51,14 @@
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-typescript": "^0.14.0",
     "eslit": "^6.0.0",
     "express": "^4.16.4",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
     "mocha": "^6.1.4",
     "ts-loader": "^6.0.0",
+    "ts-node": "^8.1.0",
     "typescript": "^3.4.5",
     "vue": "^2.6.10",
     "vue-loader": "^15.7.0",

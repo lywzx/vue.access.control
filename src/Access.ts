@@ -1,28 +1,26 @@
-import { Vue as VueConstructor } from "vue-property-decorator";
+import { Vue as VueConstructor } from 'vue-property-decorator';
 import { installFn } from './install';
-import { assert } from "./util";
-import {
-  extend
-} from 'lodash';
+import { assert } from './util';
+import { extend } from 'lodash';
 import AccessOptions from './types/AccessOptions';
 import AccessUserOptions from './types/AccessUserOptions';
 import ApplyMixin from './mixin';
-import User from "@lywzx/access.control/dist/User";
+import User from '@lywzx/access.control/dist/User';
 import {
   AbilityOptions,
   MapKeyStringValueBoolean,
-  RoleAndOwnsOptions, RoleTypes,
-  StringOrStringArray
-} from "@lywzx/access.control/dist/types/Types";
-import { Post } from "@lywzx/access.control/dist/types/Post";
-import { getRole, standardize } from "@lywzx/access.control/dist/Util";
-import AccessConstructorOptions from "./types/AccessConstructorOptions";
-import RouterMiddleware from "./router/RouterMiddleware";
+  RoleAndOwnsOptions,
+  RoleTypes,
+  StringOrStringArray,
+} from '@lywzx/access.control/dist/types/Types';
+import { Post } from '@lywzx/access.control/dist/types/Post';
+import { getRole, standardize } from '@lywzx/access.control/dist/Util';
+import AccessConstructorOptions from './types/AccessConstructorOptions';
+import RouterMiddleware from './router/RouterMiddleware';
 
 let Vue: typeof VueConstructor;
 
 export class Access {
-
   /**
    * a vue instance
    */
@@ -37,12 +35,11 @@ export class Access {
    * default Access config
    * @type AccessOptions
    */
-  static defaultOptions: AccessOptions = {
+  public static defaultOptions: AccessOptions = {
     foreignKeyName: 'user_id',
     notLoginRoleName: 'Guest',
-    vueRouter: false
+    vueRouter: false,
   };
-
 
   /**
    * user access info
@@ -58,40 +55,37 @@ export class Access {
     // Auto install if it is not done yet and `window` has `Vue`.
     // To allow users to avoid auto-installation in some cases,
     // this code should be placed here. See #731
-    let g = <Partial<{ Vue: typeof VueConstructor }>> global;
+    let g = global as Partial<{ Vue: typeof VueConstructor }>;
     if (!Vue && typeof g !== 'undefined' && g.Vue) {
       install(g.Vue);
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      assert(!!Vue, `must call Vue.use(VueAccessControl) before creating a Access instance.`);
+      assert(!!Vue, 'must call Vue.use(VueAccessControl) before creating a Access instance.');
     }
 
     // set config
-    const {
-      notLoginRoleName
-    } = this.options = extend({}, Access.defaultOptions);
+    const { notLoginRoleName } = (this.options = extend({}, Access.defaultOptions));
     // create default _userInfo
-    this.accessUserOptions = <AccessUserOptions> extend(Object.create(null), {
-      'roles': [
+    this.accessUserOptions = extend(Object.create(null), {
+      roles: [
         {
-          'role': notLoginRoleName
-        }
+          role: notLoginRoleName,
+        },
       ],
-      'permissions': [],
-      'user_id': undefined
-    });
+      permissions: [],
+      userId: undefined,
+    }) as AccessUserOptions;
 
     this._vm = resetUserInfoVm(this, this.accessUserOptions);
 
     // resolve router access
-    if ( Access.defaultOptions.vueRouter ) {
-      this.accessRouterMiddleware = new RouterMiddleware(this, {routes: options.routes || []});
+    if (Access.defaultOptions.vueRouter) {
+      this.accessRouterMiddleware = new RouterMiddleware(this, {
+        routes: options.routes || [],
+      });
     }
-
-
   }
-
 
   /**
    *
@@ -99,7 +93,6 @@ export class Access {
    * @param {string[]} permission
    */
   public setRole(role: RoleTypes, permission?: string[]): void {
-    let roles = this.accessUserOptions.roles;
     let newRoles = getRole(role, permission);
 
     if (newRoles.length <= 1 && typeof role === 'string' && permission) {
@@ -126,7 +119,7 @@ export class Access {
    * set permission
    * @param {string | string[]} permissions
    */
-  public setPermission(permissions: string | string[]):void {
+  public setPermission(permissions: string | string[]): void {
     this.accessUserOptions.permissions = standardize(permissions);
   }
 
@@ -152,14 +145,13 @@ export class Access {
     return false;
   }
 
-
   /**
    *
    * @param {StringOrStringArray} role
    * @param {boolean} requiredAll
    * @returns {boolean}
    */
-  public hasRole(role: StringOrStringArray, requiredAll: boolean = false):boolean {
+  public hasRole(role: StringOrStringArray, requiredAll: boolean = false): boolean {
     let user = this.getUser();
     if (user) {
       return user.hasRole(role, requiredAll);
@@ -208,10 +200,14 @@ export class Access {
    * @param {RoleAndOwnsOptions} options
    * @returns {boolean}
    */
-  public canAndOwns(permissions: StringOrStringArray, post: Post, options: RoleAndOwnsOptions = {
-    requireAll: false,
-    foreignKeyName: 'user_id'
-  }): boolean {
+  public canAndOwns(
+    permissions: StringOrStringArray,
+    post: Post,
+    options: RoleAndOwnsOptions = {
+      requireAll: false,
+      foreignKeyName: 'user_id',
+    }
+  ): boolean {
     let user = this.getUser();
     if (user) {
       return user.canAndOwns(permissions, post, options);
@@ -226,14 +222,20 @@ export class Access {
    * @param {AbilityOptions} options
    * @returns {boolean | {validateAll?: boolean; roles: MapKeyStringValueBoolean; permissions: MapKeyStringValueBoolean}}
    */
-  public ability(roles: StringOrStringArray, permissions: StringOrStringArray, options: AbilityOptions = {
-    validate_all: false,
-    return_type: 'both'
-  }): boolean | {
-    validateAll?: boolean;
-    roles: MapKeyStringValueBoolean,
-    permissions: MapKeyStringValueBoolean
-  } {
+  public ability(
+    roles: StringOrStringArray,
+    permissions: StringOrStringArray,
+    options: AbilityOptions = {
+      validateAll: false,
+      returnType: 'both',
+    }
+  ):
+    | boolean
+    | {
+        validateAll?: boolean;
+        roles: MapKeyStringValueBoolean;
+        permissions: MapKeyStringValueBoolean;
+      } {
     let user = this.getUser();
     if (user) {
       return user.ability(roles, permissions, options);
@@ -247,7 +249,7 @@ export class Access {
    * @param args
    * @returns {this}
    */
-  public $emit(event: string, ...args: any[]){
+  public $emit(event: string, ...args: any[]) {
     this._vm.$emit(event, ...args);
     return this;
   }
@@ -258,7 +260,7 @@ export class Access {
    * @param {Function} callback
    * @returns {this}
    */
-  public $on(event: string | string[], callback: Function){
+  public $on(event: string | string[], callback: Function) {
     this._vm.$on(event, callback);
     return this;
   }
@@ -289,10 +291,10 @@ export class Access {
    *
    * @returns {boolean | User}
    */
-  private getUser():false|User {
+  private getUser(): false | User {
     let _vm: any = this._vm;
     if (_vm && _vm.user) {
-      return <User> _vm.user;
+      return _vm.user as User;
     }
     return false;
   }
@@ -307,22 +309,23 @@ export class Access {
 function resetUserInfoVm(access: Access, accessUser: AccessUserOptions): VueConstructor {
   return new VueConstructor({
     data() {
-      return <{access: AccessUserOptions, user?: User}> {
+      // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
+      return {
         access: accessUser,
-        user: undefined
-      }
+        user: undefined,
+      } as { access: AccessUserOptions; user?: User };
     },
     watch: {
       access: {
         handler(current) {
           this.user = new User(current.roles, current.permissions, current.user_id);
         },
-        deep: true
-      }
+        deep: true,
+      },
     },
     created() {
-      this.user = new User(accessUser.roles, accessUser.permissions, accessUser.user_id);
-    }
+      this.user = new User(accessUser.roles, accessUser.permissions, accessUser.userId);
+    },
   });
 }
 
@@ -331,12 +334,10 @@ function resetUserInfoVm(access: Access, accessUser: AccessUserOptions): VueCons
  * @param {typeof VueConstructor} _Vue
  * @param Options
  */
-export const install = function (_Vue: typeof VueConstructor, Options?: AccessOptions) {
+export const install = function(_Vue: typeof VueConstructor, Options?: AccessOptions) {
   if (Vue && Vue === _Vue) {
     if (process.env.NODE_ENV !== 'production') {
-      console.error(
-        '[vue.access.control] already installed. Vue.use(VueAccessControl) should be called only once.'
-      );
+      console.error('[vue.access.control] already installed. Vue.use(VueAccessControl) should be called only once.');
     }
     return;
   }

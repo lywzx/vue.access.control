@@ -1,7 +1,5 @@
-import { NavigationGuard } from "vue-router/types/router";
+import { NavigationGuard } from 'vue-router/types/router';
 
-const login:NavigationGuard = function (to, from, next) {
-
-}
+const login: NavigationGuard = function(to, from, next) {};
 
 export default login;

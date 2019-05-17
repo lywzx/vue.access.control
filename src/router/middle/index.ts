@@ -1,5 +1,5 @@
 import login from './Login';
 
 export default {
-  login
+  login,
 };

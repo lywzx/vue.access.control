@@ -1,7 +1,4 @@
-import afterEach from "./afterEach";
-import beforeEach from "./beforeEach";
+import afterEach from './afterEach';
+import beforeEach from './beforeEach';
 
-export {
-  afterEach,
-  beforeEach
-};
+export { afterEach, beforeEach };

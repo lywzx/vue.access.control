@@ -1,9 +1,6 @@
-import VueAccessControl from 'vue.access.control';
-import Vue from 'vue';
-import {
-  AsyncStudentRoute,
-  AsyncTeacherRoute
-} from "../router/routes";
+import VueAccessControl from "vue.access.control";
+import Vue from "vue";
+import { AsyncStudentRoute, AsyncTeacherRoute } from "../router/routes";
 
 Vue.use(VueAccessControl, {
   vueRouter: true
