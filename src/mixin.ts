@@ -1,7 +1,7 @@
 import { Vue as VueConstructor } from 'vue-property-decorator';
 import { Access } from './Access';
 
-class VueExtendConstructor extends VueConstructor {
+interface VueExtendConstructor extends VueConstructor {
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   $options: any;
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

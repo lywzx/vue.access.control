@@ -244,6 +244,13 @@ export class Access {
   }
 
   /**
+   * user is login
+   */
+  public isLogin(): boolean {
+    return !!this.accessUserOptions.userId;
+  }
+
+  /**
    *
    * @param {string} event
    * @param args

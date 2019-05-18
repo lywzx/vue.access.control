@@ -1,5 +1,5 @@
-import { NavigationGuard } from 'vue-router/types/router';
+import MiddlewareInterface from '../interface/MiddlewareInterface';
 
 export default interface MiddleWares {
-  [t: string]: NavigationGuard;
+  [t: string]: MiddlewareInterface;
 }

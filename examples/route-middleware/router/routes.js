@@ -1,51 +1,54 @@
-import Home from "../views/Home/Index";
-import User from "../views/User/Index";
-import AddOrEditPost from "../views/Post/AddOrEdit";
-import Detail from "../views/Post/Detail";
-import Login from "../views/User/Login";
-import Admin from "../views/Admin/Index";
+import Home from '../views/Home/Index';
+import User from '../views/User/Index';
+import AddOrEditPost from '../views/Post/AddOrEdit';
+import Detail from '../views/Post/Detail';
+import Login from '../views/User/Login';
+import Admin from '../views/Admin/Index';
 
 export default [
   {
-    path: "",
-    redirect: "/home"
+    path: '',
+    redirect: '/home',
   },
   {
-    path: "/home",
-    component: Home
+    path: '/home',
+    component: Home,
+    meta: {
+      middleware: ['login?'],
+    },
   },
   {
-    path: "/user",
+    path: '/user',
     component: User,
     meta: {
-      middleware: ["login", "role:admin"]
-    }
+      middleware: ['login', 'role:admin'],
+    },
   },
   {
-    path: "/login",
+    path: '/login',
     component: Login,
     meta: {
-      middleware: ["login", "role:admin"]
-    }
+      middleware: ['login', 'role:admin'],
+    },
   },
   {
-    path: "/post",
+    path: '/post',
     component: AddOrEditPost,
     meta: {
-      middleware: ["login", "role:admin"]
-    }
+      middleware: ['login', 'role:admin'],
+    },
   },
   {
-    path: "/detail/:post_id(\\d+)?",
-    component: Detail
-  }
+    path: '/detail/:post_id(\\d+)?',
+    component: Detail,
+  },
 ];
 
 export const AsyncStudentRoute = [
   {
-    path: "/admin",
-    component: Admin
-  }
+    path: '/admin',
+    component: Admin,
+  },
 ];
 
 export const AsyncTeacherRoute = [];

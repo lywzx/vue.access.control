@@ -2,44 +2,72 @@ import 'mocha';
 import { expect } from 'chai';
 import PipeLine from '../../src/class/PipeLine';
 
-describe('PipeLine Test', function() {
+
+describe('PipeLine Test', function(): void {
   it('should be return PipeLine instance', function() {
-    let fn1 = function(next: Function) {
-      setTimeout(next, 100, 1);
-    };
-    expect(new PipeLine([fn1])).to.instanceOf(PipeLine);
+    expect(new PipeLine()).to.instanceOf(PipeLine);
   });
 
-  it('get result with sync data', function() {
-    let fn1 = function(next: Function) {
-      setTimeout(
-        function() {
-          debugger;
-          console.log(1);
-          next(1);
-        },
-        100,
-        1
-      );
+  it('get result with sync data', function(done) {
+    let task1 = {
+      handle(next: Function, last?: number) {
+        let result = last ? last + 1 : 1;
+        if (typeof next === 'function') {
+          return next(result);
+        }
+        return result;
+      },
+      clearArgs() {
+        return this;
+      },
+      setArgs(...args: any[]) {
+        return this;
+      },
     };
-    let fn2 = function(next: Function) {
-      setTimeout(
-        function() {
-          debugger;
-          console.log(2);
-          next(2);
-        },
-        1500,
-        1
-      );
+    let task2 = {
+      handle(next: Function, last?: number) {
+        let result = last ? last + 1 : 1;
+        if (typeof next === 'function') {
+          return next(result);
+        }
+        return result;
+      },
+      clearArgs() {
+        return this;
+      },
+      setArgs(...args: any[]) {
+        return this;
+      },
     };
-    let fn3 = function(next: Function) {
-      setTimeout(next, 200, 1);
+    let task3 = {
+      handle(next: Function, last?: number) {
+        let result = last ? last + 1 : 1;
+        if (typeof next === 'function') {
+          return next(result);
+        }
+        return result;
+      },
+      clearArgs() {
+        return this;
+      },
+      setArgs(...args: any[]) {
+        return this;
+      },
     };
-    let pipeLine = new PipeLine([fn1, fn2, fn3]);
+    let pipeLine = new PipeLine();
 
-    pipeLine.pipe(function(result: any) {
-      expect(result).to.be.equal(1);
-    });
+    /*pipeLine.through([task1, task2, task3]).then(function(result: any) {
+      expect(result).to.equal(3);
+    });*/
+
+    pipeLine
+      .send(null)
+      .through([task1, task2, task3])
+      .then()
+      // @ts-ignore
+      .then(function(result: number) {
+        expect(result).to.equal(4);
+        done();
+      });
   });
 });

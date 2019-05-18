@@ -1,33 +1,95 @@
-import { clone } from 'lodash';
+import PipeLineInterface from '../interface/PipeLineInterface';
+import { isString, trim, spread, partial } from 'lodash';
+import { assert } from '../util';
+import MiddlewareInterface from '../interface/MiddlewareInterface';
+import RouterMiddleware from '../router/RouterMiddleware';
 
-export default class PipeLine {
+export default class PipeLine implements PipeLineInterface {
   /**
-   * is break
-   * @type {boolean}
+   * running status
    */
-  protected break = false;
+  private running: boolean = false;
 
   /**
    *
    */
-  private buildMethod: Function;
+  private command: MiddlewareInterface[] = [];
 
-  public constructor(public funs: Function[]) {
-    this.buildMethod = this.pipeFn();
+  /**
+   *
+   */
+  private args: any[] = [];
+
+  public via() {
+    return this;
   }
 
-  private pipeFn() {
-    let funcs: Function[] = clone(this.funs);
-    return function(scope: any) {
-      (function next() {
-        if (funcs.length > 0) {
-          (funcs.shift() as Function).apply(scope || {}, [next].concat(Array.prototype.slice.call(arguments, 0)));
+  public send(...args: any[]) {
+    this.args = args;
+    return this;
+  }
+
+  public then(callback?: Function): void | Promise<any[]> {
+    let command = this.command;
+    let args = this.args;
+
+    let next: Function;
+    if (callback) {
+      next = function(...arg: any[]): void {
+        if (command.length) {
+          let current: MiddlewareInterface = command.shift() as MiddlewareInterface;
+          current.handle(next, ...args, ...arg);
+        } else {
+          callback(...arg);
         }
-      })();
-    };
+      };
+    } else {
+      next = function(...arg: any[]): Promise<any> {
+        if (command.length) {
+          let current: MiddlewareInterface = command.shift() as MiddlewareInterface;
+
+          // @ts-ignore
+          return Promise.resolve(current.handle(...args, ...arg)).then(next);
+          //return next().then(spread(next));
+          //return Promise.resolve(current.handle(next, ...arg));
+        } else {
+          return Promise.resolve(arg[0]);
+        }
+      };
+    }
+
+    return next();
   }
 
-  public pipe(callback: Function, ...args: any[]): void | Promise<any> {
-    this.buildMethod(...args);
+  public through(middleWares: (string | MiddlewareInterface)[]) {
+    let existsMiddleWares = RouterMiddleware.middleWares;
+    this.command = middleWares.map(middle => {
+      if (!isString(middle)) {
+        return middle;
+      }
+      let [fnName, fnArgString] = middle.split(':');
+      let isOptional = fnName.substr(-1) === '?';
+      fnName = isOptional ? fnName.substring(0, fnName.length - 1) : fnName;
+      let fnArgs = isString(fnArgString)
+        ? fnArgString.split(',').map(function(item) {
+            let result: any = trim(item);
+            if (['true', 'false'].indexOf(result.toLowerCase())) {
+              result = Boolean(result);
+            }
+            return result;
+          })
+        : [];
+      if (existsMiddleWares[fnName]) {
+        let middle: MiddlewareInterface = existsMiddleWares[fnName];
+        if (isOptional) {
+          middle.optional();
+        }
+        return middle.clearArgs().setArgs(fnArgs);
+      }
+
+      assert(true, `middleware name: ${fnName} not defined, please call RouterMiddleware:extend define '${fnName}'`);
+    }) as MiddlewareInterface[];
+
+    return this;
   }
 }
