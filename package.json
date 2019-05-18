@@ -1,5 +1,5 @@
 {
-  "name": "vue.access.control",
+  "name": "@lywzx/vue.access.control",
   "version": "1.0.0",
   "description": "vue access control",
   "main": "dist/index.js",

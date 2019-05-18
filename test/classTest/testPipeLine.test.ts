@@ -2,7 +2,6 @@ import 'mocha';
 import { expect } from 'chai';
 import PipeLine from '../../src/class/PipeLine';
 
-
 describe('PipeLine Test', function(): void {
   it('should be return PipeLine instance', function() {
     expect(new PipeLine()).to.instanceOf(PipeLine);
@@ -23,6 +22,9 @@ describe('PipeLine Test', function(): void {
       setArgs(...args: any[]) {
         return this;
       },
+      optional() {
+        return this;
+      },
     };
     let task2 = {
       handle(next: Function, last?: number) {
@@ -38,6 +40,9 @@ describe('PipeLine Test', function(): void {
       setArgs(...args: any[]) {
         return this;
       },
+      optional() {
+        return this;
+      },
     };
     let task3 = {
       handle(next: Function, last?: number) {
@@ -51,6 +56,9 @@ describe('PipeLine Test', function(): void {
         return this;
       },
       setArgs(...args: any[]) {
+        return this;
+      },
+      optional() {
         return this;
       },
     };
