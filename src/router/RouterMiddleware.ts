@@ -57,9 +57,7 @@ export default class RouterMiddleware {
     let middlewFn = this.getMiddleWareFn(middleware, next);
 
     middlewFn.call(scope, to, from);*/
-    console.log('route defined middleware', options.middleware);
     let middleWares = this.getCurrentMiddleWares(options.middleware);
-    console.log('route run middleware', middleWares);
 
     return this.pipeLine
       .send(scope, to, from)
