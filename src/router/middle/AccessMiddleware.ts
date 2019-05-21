@@ -4,6 +4,8 @@ import { Access } from '../../Access';
 
 export default function(type: string): MiddlewareInterface {
   return new class AccessMiddleware implements MiddlewareInterface {
+    private _isTerminal: boolean = false;
+
     private args = [];
 
     public handle(next: Function, router: VueRouter, to: Route, from: Route): void {
@@ -46,6 +48,15 @@ export default function(type: string): MiddlewareInterface {
     }
 
     public optional() {
+      return this;
+    }
+
+    public isTerminal(): boolean {
+      return this._isTerminal;
+    }
+
+    public terminal(terminal: boolean) {
+      this._isTerminal = terminal;
       return this;
     }
   }();

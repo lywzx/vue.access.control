@@ -1,9 +1,8 @@
 import { Vue as VueConstructor } from 'vue-property-decorator';
 import { installFn } from './install';
 import { assert } from './util';
-import { extend } from 'lodash';
+import { extend, pick } from 'lodash';
 import AccessOptions from './types/AccessOptions';
-import AccessUserOptions from './types/AccessUserOptions';
 import ApplyMixin from './mixin';
 import User from '@lywzx/access.control/dist/User';
 import {
@@ -17,6 +16,8 @@ import { Post } from '@lywzx/access.control/dist/types/Post';
 import { getRole, standardize } from '@lywzx/access.control/dist/Util';
 import AccessConstructorOptions from './types/AccessConstructorOptions';
 import RouterMiddleware from './router/RouterMiddleware';
+import AccessVmData from './types/AccessVmData';
+import AccessUserOptions from './types/AccessUserOptions';
 
 let Vue: typeof VueConstructor;
 
@@ -39,18 +40,28 @@ export class Access {
     foreignKeyName: 'user_id',
     notLoginRoleName: 'Guest',
     vueRouter: false,
+    globalMiddleware: [],
   };
 
   /**
-   * user access info
+   *
    */
-  public accessUserOptions: AccessUserOptions;
+  public accessData: AccessVmData;
+
+  /*/!**
+   * user access info
+   *!/
+  public accessUserOptions: AccessUserOptions;*/
 
   /**
    * router middleware
    */
   public accessRouterMiddleware?: RouterMiddleware;
 
+  /**
+   *
+   * @param options
+   */
   public constructor(options: AccessConstructorOptions) {
     // Auto install if it is not done yet and `window` has `Vue`.
     // To allow users to avoid auto-installation in some cases,
@@ -67,17 +78,20 @@ export class Access {
     // set config
     const { notLoginRoleName } = (this.options = extend({}, Access.defaultOptions));
     // create default _userInfo
-    this.accessUserOptions = extend(Object.create(null), {
-      roles: [
-        {
-          role: notLoginRoleName,
-        },
-      ],
-      permissions: [],
-      userId: undefined,
-    }) as AccessUserOptions;
+    this.accessData = extend(Object.create(null), {
+      userOptions: {
+        roles: [
+          {
+            role: notLoginRoleName,
+          },
+        ],
+        permissions: [],
+        userId: undefined,
+      },
+      extendData: {},
+    }) as AccessVmData;
 
-    this._vm = resetUserInfoVm(this, this.accessUserOptions);
+    this._vm = resetUserInfoVm(this, this.accessData);
 
     // resolve router access
     if (Access.defaultOptions.vueRouter) {
@@ -96,9 +110,9 @@ export class Access {
     let newRoles = getRole(role, permission);
 
     if (newRoles.length <= 1 && typeof role === 'string' && permission) {
-      this.accessUserOptions.permissions = permission;
+      this.accessData.userOptions.permissions = permission;
     }
-    this.accessUserOptions.roles = newRoles;
+    this.accessData.userOptions.roles = newRoles;
   }
 
   /**
@@ -107,11 +121,11 @@ export class Access {
    * @param {string[]} permission
    */
   public appendRole(role: RoleTypes, permission?: string[]): void {
-    let oldRoles = this.accessUserOptions.roles;
+    let oldRoles = this.accessData.userOptions.roles;
     let newRole = getRole(role, permission);
-    this.accessUserOptions.roles = oldRoles.concat(newRole);
+    this.accessData.userOptions.roles = oldRoles.concat(newRole);
     if (newRole.length <= 1 && typeof role === 'string' && permission) {
-      this.accessUserOptions.permissions = permission;
+      this.accessData.userOptions.permissions = permission;
     }
   }
 
@@ -120,7 +134,7 @@ export class Access {
    * @param {string | string[]} permissions
    */
   public setPermission(permissions: string | string[]): void {
-    this.accessUserOptions.permissions = standardize(permissions);
+    this.accessData.userOptions.permissions = standardize(permissions);
   }
 
   /**
@@ -128,7 +142,7 @@ export class Access {
    * @param {string | string[]} permissions
    */
   public appendPermission(permissions: string | string[]): void {
-    this.accessUserOptions.permissions = this.accessUserOptions.permissions.concat(standardize(permissions));
+    this.accessData.userOptions.permissions = this.accessData.userOptions.permissions.concat(standardize(permissions));
   }
 
   /**
@@ -246,8 +260,8 @@ export class Access {
   /**
    * user is login
    */
-  public isLogin(): boolean {
-    return !!this.accessUserOptions.userId;
+  public isLogin(): boolean | void {
+    return this.accessData.userOptions.isLogin;
   }
 
   /**
@@ -305,33 +319,76 @@ export class Access {
     }
     return false;
   }
+
+  /**
+   * set extend info, for example user info
+   * @param obj
+   */
+  public setExtendInfo(obj: Record<string, any>): void {
+    this.accessData.extendData = Object.freeze(extend({}, this.accessData.extendData, obj));
+  }
+
+  /**
+   * get extend info from extend data
+   */
+  public getExtendInfo(): Record<string, any> {
+    return this.accessData.extendData;
+  }
+
+  /**
+   * update login user info
+   * @param accessInfo
+   */
+  public setLoginUserInfo(accessInfo: Partial<Pick<AccessUserOptions, 'roles' | 'permissions' | 'userId'>>): void {
+    let info = pick(accessInfo, ['roles', 'permissions', 'userId']);
+    extend(this.accessData.userOptions, info);
+  }
 }
 
 /**
  *
  * @param {Access} access
- * @param {AccessUserOptions} accessUser
+ * @param {AccessUserOptions} accessVmData
  * @returns {Vue}
  */
-function resetUserInfoVm(access: Access, accessUser: AccessUserOptions): VueConstructor {
+function resetUserInfoVm(access: Access, accessVmData: AccessVmData): VueConstructor {
   return new VueConstructor({
     data() {
       // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
       return {
-        access: accessUser,
+        access: accessVmData,
         user: undefined,
-      } as { access: AccessUserOptions; user?: User };
+      } as { access: AccessVmData; user?: User };
     },
     watch: {
-      access: {
-        handler(current) {
-          this.user = new User(current.roles, current.permissions, current.user_id);
+      'access.userOptions': {
+        handler(current: AccessUserOptions, last?: AccessUserOptions) {
+          this.user = new User(current.roles, current.permissions, current.userId);
+
+          // resolve user login or logout event
+          let currentUserId = current.userId;
+          let lastUserId = last && last.userId;
+
+          // login in
+          if (currentUserId && !lastUserId) {
+            this.$emit('user:login');
+          }
+          if (!currentUserId && lastUserId) {
+            this.$emit('user:logout');
+          }
+          if (currentUserId && lastUserId && currentUserId !== lastUserId) {
+            this.$emit('user:login:change');
+          }
         },
         deep: true,
       },
     },
     created() {
-      this.user = new User(accessUser.roles, accessUser.permissions, accessUser.userId);
+      this.user = new User(
+        accessVmData.userOptions.roles,
+        accessVmData.userOptions.permissions,
+        accessVmData.userOptions.userId
+      );
     },
   });
 }
@@ -351,6 +408,9 @@ export const install = function(_Vue: typeof VueConstructor, Options?: AccessOpt
   Vue = _Vue;
   if (Options) {
     extend(Access.defaultOptions, Options);
+  }
+  if (Access.defaultOptions.globalMiddleware) {
+    RouterMiddleware.setGlobalMiddleWares(Access.defaultOptions.globalMiddleware);
   }
   ApplyMixin(Vue);
   installFn(Vue);

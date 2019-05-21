@@ -5,4 +5,5 @@ export default interface AccessOptions {
   notLoginRoleName: string;
   loginRoute?: RawLocation;
   vueRouter?: boolean;
+  globalMiddleware?: string[];
 }

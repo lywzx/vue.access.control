@@ -61,7 +61,11 @@ export default class PipeLine implements PipeLineInterface {
     return next();
   }
 
-  public through(middleWares: (string | MiddlewareInterface)[]) {
+  /**
+   * @param middleWares
+   * @param terminal
+   */
+  public through(middleWares: (string | MiddlewareInterface)[], terminal: boolean = true) {
     let existsMiddleWares = RouterMiddleware.middleWares;
     this.command = middleWares.map(middle => {
       if (!isString(middle)) {
@@ -84,10 +88,13 @@ export default class PipeLine implements PipeLineInterface {
         if (isOptional) {
           middle.optional();
         }
-        return middle.clearArgs().setArgs(fnArgs);
+        return middle
+          .terminal(terminal)
+          .clearArgs()
+          .setArgs(fnArgs);
       }
 
-      assert(true, `middleware name: ${fnName} not defined, please call RouterMiddleware:extend define '${fnName}'`);
+      assert(false, `middleware name: ${fnName} not defined, please call RouterMiddleware:extend define '${fnName}'`);
     }) as MiddlewareInterface[];
 
     return this;
