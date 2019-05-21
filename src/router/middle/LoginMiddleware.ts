@@ -5,9 +5,9 @@ import { isFunction, isObject } from 'lodash';
 import { assert } from '../../util';
 
 export default class LoginMiddleware implements MiddlewareInterface {
-  private args = [];
+  private args: any[] = [];
 
-  private isOptional: boolean = false;
+  private _isOptional: boolean = false;
 
   private _isTerminal: boolean = false;
 
@@ -65,13 +65,13 @@ export default class LoginMiddleware implements MiddlewareInterface {
     return this;
   }
 
-  public setArgs(...args: any) {
+  public setArgs(args: any[]) {
     this.args = args;
     return this;
   }
 
-  public optional() {
-    this.isOptional = true;
+  public optional(optional: boolean = true) {
+    this._isOptional = optional;
     return this;
   }
 
@@ -82,5 +82,9 @@ export default class LoginMiddleware implements MiddlewareInterface {
   public terminal(terminal: boolean) {
     this._isTerminal = terminal;
     return this;
+  }
+
+  public isOptional(): boolean {
+    return this._isOptional;
   }
 }

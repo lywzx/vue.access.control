@@ -1,5 +1,5 @@
 import PipeLineInterface from '../interface/PipeLineInterface';
-import { isString, trim, spread, partial } from 'lodash';
+import { isString, trim } from 'lodash';
 import { assert } from '../util';
 import MiddlewareInterface from '../interface/MiddlewareInterface';
 import RouterMiddleware from '../router/RouterMiddleware';
@@ -77,12 +77,13 @@ export default class PipeLine implements PipeLineInterface {
       let fnArgs = isString(fnArgString)
         ? fnArgString.split(',').map(function(item) {
             let result: any = trim(item);
-            if (['true', 'false'].indexOf(result.toLowerCase())) {
+            if (['true', 'false'].indexOf(result.toLowerCase()) !== -1) {
               result = Boolean(result);
             }
             return result;
           })
         : [];
+
       if (existsMiddleWares[fnName]) {
         let middle: MiddlewareInterface = existsMiddleWares[fnName];
         if (isOptional) {

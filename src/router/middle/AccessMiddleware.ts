@@ -4,9 +4,11 @@ import { Access } from '../../Access';
 
 export default function(type: string): MiddlewareInterface {
   return new class AccessMiddleware implements MiddlewareInterface {
+    private _isOptional: boolean = false;
+
     private _isTerminal: boolean = false;
 
-    private args = [];
+    private args: any[] = [];
 
     public handle(next: Function, router: VueRouter, to: Route, from: Route): void {
       let app = router.app as { $access?: Access };
@@ -14,7 +16,6 @@ export default function(type: string): MiddlewareInterface {
       if (app.$access) {
         let access = app.$access as Access;
         let result;
-
         switch (type) {
           case 'role':
             result = access.hasRole(args[0], args[1] || undefined);
@@ -42,12 +43,13 @@ export default function(type: string): MiddlewareInterface {
       return this;
     }
 
-    public setArgs(...args: any) {
+    public setArgs(args: any[]) {
       this.args = args;
       return this;
     }
 
-    public optional() {
+    public optional(optional: boolean = true) {
+      this._isOptional = optional;
       return this;
     }
 
@@ -58,6 +60,10 @@ export default function(type: string): MiddlewareInterface {
     public terminal(terminal: boolean) {
       this._isTerminal = terminal;
       return this;
+    }
+
+    public isOptional(): boolean {
+      return this._isOptional;
     }
   }();
 }

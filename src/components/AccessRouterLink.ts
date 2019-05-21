@@ -22,7 +22,13 @@ const AccessRouterLink = {
       : null;
   },
   watch: {
-    '$access.accessData.userOptions'() {},
+    '$access.accessData.userOptions': {
+      handler() {
+        // @ts-ignore
+        this.initPermission();
+      },
+      deep: true,
+    },
   },
   methods: {
     initPermission(): void {
@@ -54,6 +60,5 @@ const AccessRouterLink = {
     this.initPermission();
   },
 };
-
 
 export default AccessRouterLink;

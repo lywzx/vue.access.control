@@ -57,8 +57,9 @@ export default class RouterMiddleware {
     let middlewFn = this.getMiddleWareFn(middleware, next);
 
     middlewFn.call(scope, to, from);*/
-
+    console.log('route defined middleware', options.middleware);
     let middleWares = this.getCurrentMiddleWares(options.middleware);
+    console.log('route run middleware', middleWares);
 
     return this.pipeLine
       .send(scope, to, from)
@@ -75,7 +76,6 @@ export default class RouterMiddleware {
   private getCurrentMiddleWares(middleWares: string[]): string[] {
     let globalMiddleWares = RouterMiddleware.globalMiddleWares;
     let middles = globalMiddleWares.concat(middleWares);
-
     let resultMiddleWares: string[] = [];
     // remove repeat middles
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

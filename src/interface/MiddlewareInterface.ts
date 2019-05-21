@@ -1,8 +1,9 @@
 export default interface MiddlewareInterface {
   terminal(terminal: boolean): MiddlewareInterface;
   isTerminal(): boolean;
-  optional(): MiddlewareInterface;
+  isOptional(): boolean;
+  optional(optional?: boolean): MiddlewareInterface;
   clearArgs(): MiddlewareInterface;
-  setArgs(...args: any[]): MiddlewareInterface;
+  setArgs(args: any[]): MiddlewareInterface;
   handle(...args: any[]): any;
 }

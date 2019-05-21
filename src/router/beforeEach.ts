@@ -1,7 +1,8 @@
-import { NavigationGuard, Route, VueRouter } from 'vue-router/types/router';
+import { NavigationGuard, Route, RouteRecord, VueRouter } from 'vue-router/types/router';
 import { Access } from '../Access';
 import RouterMiddleware from './RouterMiddleware';
 import { assert } from '../util';
+import { flatten, map } from 'lodash';
 
 const beforeEach: NavigationGuard = function(this: VueRouter, to: Route, from: Route, next) {
   let app: any = this.app.$options;
@@ -12,11 +13,19 @@ const beforeEach: NavigationGuard = function(this: VueRouter, to: Route, from: R
     return assert(true, 'not be install correct or not open route middleware function');
   }
   let routerMiddleWare: RouterMiddleware = access.accessRouterMiddleware as RouterMiddleware;
-  let meta: any = to.meta;
+  let matched: RouteRecord[] = to.matched;
+  let middleware: string[] = flatten(
+    map(matched, function(item: RouteRecord) {
+      if (item.meta && item.meta.middleware) {
+        return item.meta.middleware;
+      }
+      return [];
+    })
+  );
 
   routerMiddleWare.runMiddleware(
     {
-      middleware: meta.middleware || [],
+      middleware: middleware,
       next: next,
     },
     this,
