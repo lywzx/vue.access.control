@@ -6,19 +6,14 @@ import RouterMiddleware from '../router/RouterMiddleware';
 
 export default class PipeLine implements PipeLineInterface {
   /**
-   * running status
+   *
    */
-  private running: boolean = false;
+  protected command: MiddlewareInterface[] = [];
 
   /**
    *
    */
-  private command: MiddlewareInterface[] = [];
-
-  /**
-   *
-   */
-  private args: any[] = [];
+  protected args: any[] = [];
 
   public via() {
     return this;
@@ -32,7 +27,6 @@ export default class PipeLine implements PipeLineInterface {
   public then(callback?: Function): void | Promise<any[]> {
     let command = this.command;
     let args = this.args;
-
     let next: Function;
     if (callback) {
       next = function(...arg: any[]): void {
@@ -78,14 +72,14 @@ export default class PipeLine implements PipeLineInterface {
         ? fnArgString.split(',').map(function(item) {
             let result: any = trim(item);
             if (['true', 'false'].indexOf(result.toLowerCase()) !== -1) {
-              result = Boolean(result);
+              result = result.toLowerCase() === 'true';
             }
             return result;
           })
         : [];
 
       if (existsMiddleWares[fnName]) {
-        let middle: MiddlewareInterface = existsMiddleWares[fnName];
+        let middle: MiddlewareInterface = new existsMiddleWares[fnName];
         if (isOptional) {
           middle.optional();
         }

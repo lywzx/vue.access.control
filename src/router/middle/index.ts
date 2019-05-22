@@ -1,10 +1,11 @@
 import LoginMiddleware from './LoginMiddleware';
-import accessMiddleware from './AccessMiddleware';
+import AccessRoleMiddleware from './AccessRoleMiddleware';
+import AccessCanMiddleware from './AccessCanMiddleware';
+import AccessAbilityMiddleware from './AccessAbilityMiddleware';
 
 export default {
-  login: new LoginMiddleware(),
-  can: accessMiddleware('can'),
-  permission: accessMiddleware('permission'),
-  role: accessMiddleware('role'),
-  ability: accessMiddleware('ability'),
+  login: LoginMiddleware,
+  can: AccessCanMiddleware,
+  role: AccessRoleMiddleware,
+  ability: AccessAbilityMiddleware,
 };

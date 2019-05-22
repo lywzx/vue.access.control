@@ -1,13 +1,14 @@
 import { RouteConfig, VueRouter, Route } from 'vue-router/types/router';
 import RouterMiddlewareConstructorOptions from '../types/RouterMiddlewareConstructorOptions';
 import defaultMiddleWares from './middle/index';
-import MiddleWares from '../types/MiddleWares';
 import PipeLine from '../class/PipeLine';
 import { Access } from '../Access';
 import { uniq } from 'lodash';
+import Queue from '../class/Queue';
+import QueueTask from '../class/QueueTask';
 
 export default class RouterMiddleware {
-  public static middleWares: MiddleWares = defaultMiddleWares;
+  public static middleWares: Record<string, any> = defaultMiddleWares;
 
   /**
    * global middleWares
@@ -25,9 +26,9 @@ export default class RouterMiddleware {
   private access: Access;
 
   /**
-   *
+   * validate queue
    */
-  private pipeLine = new PipeLine();
+  private queue = new Queue();
 
   /**
    *
@@ -51,7 +52,7 @@ export default class RouterMiddleware {
     },
     scope: VueRouter,
     to: Route,
-    from: Route
+    from?: Route
   ) {
     /*let { middleware, next } = options;
     let middlewFn = this.getMiddleWareFn(middleware, next);
@@ -59,12 +60,19 @@ export default class RouterMiddleware {
     middlewFn.call(scope, to, from);*/
     let middleWares = this.getCurrentMiddleWares(options.middleware);
 
-    return this.pipeLine
-      .send(scope, to, from)
-      .through(middleWares, options.terminal || false)
-      .then(function(result: any) {
-        options.next(result);
-      });
+    this.queue.addCommand(
+      new class RouterMiddleQueueTask extends QueueTask {
+        public handle(next: Function): any {
+          new PipeLine()
+            .send(scope, to, from)
+            .through(middleWares, options.terminal || false)
+            .then(function(result: any) {
+              options.next(result);
+              next();
+            });
+        }
+      }()
+    );
   }
 
   /**
@@ -75,6 +83,7 @@ export default class RouterMiddleware {
     let globalMiddleWares = RouterMiddleware.globalMiddleWares;
     let middles = globalMiddleWares.concat(middleWares);
     let resultMiddleWares: string[] = [];
+    console.log('will run ', middles);
     // remove repeat middles
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (let i = 0, current; (current = middles[i]); i++) {
@@ -85,7 +94,7 @@ export default class RouterMiddleware {
       }
       resultMiddleWares.push(current);
     }
-
+    console.log('real run', resultMiddleWares);
     return uniq(resultMiddleWares);
   }
 
