@@ -74,7 +74,6 @@ function buildFn(fn: Function) {
             {
               middleware: route.meta.middleware || [],
               next: (result: boolean | void) => {
-                console.log(extend({}, binding, { value: result === undefined ? true : result }));
                 // @ts-ignore
                 fn.call(
                   this,

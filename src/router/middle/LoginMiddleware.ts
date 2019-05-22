@@ -25,7 +25,6 @@ export default class LoginMiddleware implements MiddlewareInterface {
     // @ts-ignore
     let access = (router.app.$access || router.app.$options.access) as Access;
     let loginStatus = access.isLogin();
-    console.log('login isOptional', this.isOptional(), '_isTerminal', this.isTerminal());
     let nextAction = () => {
       next(access.isLogin() || this.isOptional() ? undefined : false);
     };

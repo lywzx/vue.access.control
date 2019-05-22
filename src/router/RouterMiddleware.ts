@@ -83,7 +83,6 @@ export default class RouterMiddleware {
     let globalMiddleWares = RouterMiddleware.globalMiddleWares;
     let middles = globalMiddleWares.concat(middleWares);
     let resultMiddleWares: string[] = [];
-    console.log('will run ', middles);
     // remove repeat middles
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (let i = 0, current; (current = middles[i]); i++) {
@@ -94,7 +93,6 @@ export default class RouterMiddleware {
       }
       resultMiddleWares.push(current);
     }
-    console.log('real run', resultMiddleWares);
     return uniq(resultMiddleWares);
   }
 
