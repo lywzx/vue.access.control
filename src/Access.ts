@@ -1,7 +1,7 @@
 import { Vue as VueConstructor } from 'vue-property-decorator';
 import { installFn } from './install';
 import { assert } from './util';
-import { extend, pick } from 'lodash';
+import { extend, pick, get } from 'lodash';
 import AccessOptions from './types/AccessOptions';
 import ApplyMixin from './mixin';
 import User from '@lywzx/access.control/dist/User';
@@ -331,7 +331,10 @@ export class Access {
   /**
    * get extend info from extend data
    */
-  public getExtendInfo(): Record<string, any> {
+  public getExtendInfo(key?: string): any {
+    if (key) {
+      return get(this.accessData.extendData, key);
+    }
     return this.accessData.extendData;
   }
 
