@@ -83,16 +83,18 @@ export default class RouterMiddleware {
     let globalMiddleWares = RouterMiddleware.globalMiddleWares;
     let middles = globalMiddleWares.concat(middleWares);
     let resultMiddleWares: string[] = [];
+
     // remove repeat middles
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (let i = 0, current; (current = middles[i]); i++) {
       if (current.substr(0, 1) === '-') {
         let realMiddles = current.substr(1);
-        resultMiddleWares = resultMiddleWares.filter(item => item === realMiddles || item === realMiddles + '?');
+        resultMiddleWares = resultMiddleWares.filter(item => !(item === realMiddles || item === realMiddles + '?'));
         continue;
       }
       resultMiddleWares.push(current);
     }
+
     return uniq(resultMiddleWares);
   }
 

@@ -22,6 +22,7 @@ const beforeEach: NavigationGuard = function(this: VueRouter, to: Route, from: R
       return [];
     })
   );
+
   routerMiddleWare.runMiddleware(
     {
       middleware: middleware,

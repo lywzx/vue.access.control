@@ -324,8 +324,9 @@ export class Access {
    * set extend info, for example user info
    * @param obj
    */
-  public setExtendInfo(obj: Record<string, any>): void {
+  public setExtendInfo(obj: Record<string, any>) {
     this.accessData.extendData = Object.freeze(extend({}, this.accessData.extendData, obj));
+    return this;
   }
 
   /**
@@ -342,9 +343,25 @@ export class Access {
    * update login user info
    * @param accessInfo
    */
-  public setLoginUserInfo(accessInfo: Partial<Pick<AccessUserOptions, 'roles' | 'permissions' | 'userId'>>): void {
-    let info = pick(accessInfo, ['roles', 'permissions', 'userId']);
+  public setLoginUserInfo(
+    accessInfo: Partial<Pick<AccessUserOptions, 'roles' | 'permissions' | 'userId' | 'isLogin'>>
+  ) {
+    let info = pick(accessInfo, ['roles', 'permissions', 'userId', 'isLogin']);
     extend(this.accessData.userOptions, info);
+    return this;
+  }
+
+  /**
+   * reset login status
+   */
+  public reset() {
+    this.setLoginUserInfo({
+      roles: [Access.defaultOptions.notLoginRoleName],
+      permissions: [],
+      userId: undefined,
+      isLogin: undefined,
+    });
+    return this;
   }
 }
 
@@ -366,9 +383,10 @@ function resetUserInfoVm(access: Access, accessVmData: AccessVmData): VueConstru
     watch: {
       'access.userOptions': {
         handler(current: AccessUserOptions, last?: AccessUserOptions) {
+          // @ts-ignore
           this.user = new User(current.roles, current.permissions, current.userId);
 
-          // resolve user login or logout event
+          /*// resolve user login or logout event
           let currentUserId = current.userId;
           let lastUserId = last && last.userId;
 
@@ -381,13 +399,14 @@ function resetUserInfoVm(access: Access, accessVmData: AccessVmData): VueConstru
           }
           if (currentUserId && lastUserId && currentUserId !== lastUserId) {
             this.$emit('user:login:change');
-          }
+          }*/
         },
         deep: true,
       },
     },
     created() {
       this.user = new User(
+        // @ts-ignore
         accessVmData.userOptions.roles,
         accessVmData.userOptions.permissions,
         accessVmData.userOptions.userId
