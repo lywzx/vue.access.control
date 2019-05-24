@@ -1,14 +1,11 @@
 import MiddlewareInterface from '../interface/MiddlewareInterface';
 
 export default class QueueTask implements MiddlewareInterface {
-
   public clearArgs() {
     return this;
   }
 
-  public handle(...args: any[]): any {
-
-  }
+  public handle(...args: any[]): any {}
 
   public isOptional(): boolean {
     return false;

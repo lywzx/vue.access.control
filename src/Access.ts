@@ -325,7 +325,7 @@ export class Access {
    * @param obj
    */
   public setExtendInfo(obj: Record<string, any>) {
-    this.accessData.extendData = Object.freeze(extend({}, this.accessData.extendData, obj));
+    this.accessData.extendData = /*Object.freeze(*/extend({}, this.accessData.extendData, obj);/*);*/
     return this;
   }
 

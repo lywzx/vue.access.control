@@ -6,4 +6,6 @@ export default interface PipeLineInterface {
   through(middleWares: string[]): PipeLineInterface;
 
   then(callback?: Function): void | Promise<any>;
+
+  handleBreak?(res: any): boolean;
 }

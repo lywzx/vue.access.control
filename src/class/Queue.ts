@@ -2,10 +2,7 @@ import PipeLine from './PipeLine';
 import MiddlewareInterface from '../interface/MiddlewareInterface';
 
 export default class Queue extends PipeLine {
-  /**
-   * running status
-   */
-  private running: boolean = false;
+  protected running: boolean = false;
 
   /**
    * get queue running status
@@ -13,6 +10,14 @@ export default class Queue extends PipeLine {
    */
   public isRunning(): boolean {
     return this.running;
+  }
+
+  /**
+   * won't be break
+   * @param result
+   */
+  public handleBreak(result: any): boolean {
+    return false;
   }
 
   /**

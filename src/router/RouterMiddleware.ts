@@ -63,7 +63,7 @@ export default class RouterMiddleware {
     this.queue.addCommand(
       new class RouterMiddleQueueTask extends QueueTask {
         public handle(next: Function): any {
-          new PipeLine()
+          new PipeLine(RouterMiddleware.middleWares)
             .send(scope, to, from)
             .through(middleWares, options.terminal || false)
             .then(function(result: any) {

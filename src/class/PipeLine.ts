@@ -1,10 +1,10 @@
 import PipeLineInterface from '../interface/PipeLineInterface';
-import { isString, trim } from 'lodash';
-import { assert } from '../util';
+import { isString, trim, isFunction, isArray } from 'lodash';
+import { assert, isPromiseLike } from '../util';
 import MiddlewareInterface from '../interface/MiddlewareInterface';
-import RouterMiddleware from '../router/RouterMiddleware';
 
 export default class PipeLine implements PipeLineInterface {
+  public constructor(protected existsCommand?: Record<string, any>) {}
   /**
    *
    */
@@ -24,35 +24,51 @@ export default class PipeLine implements PipeLineInterface {
     return this;
   }
 
+  public handleBreak(result: any): boolean {
+    return result === false;
+  }
+
   public then(callback?: Function): void | Promise<any[]> {
     let command = this.command;
     let args = this.args;
     let next: Function;
-    if (callback) {
-      next = function(...arg: any[]): void {
-        if (command.length) {
-          let current: MiddlewareInterface = command.shift() as MiddlewareInterface;
-          current.handle(next, ...args, ...arg);
+    let self = this;
+    next = function(...result: any[]): void | Promise<any[]> {
+      let first = result && result[0];
+      if ((self.handleBreak && self.handleBreak(result)) || !command.length) {
+        if (isFunction(callback)) {
+          return callback(...result);
+        } else if (isPromiseLike(first)) {
+          return first;
         } else {
-          callback(...arg);
+          return Promise.resolve(result);
         }
-      };
-    } else {
-      next = function(...arg: any[]): Promise<any> {
-        if (command.length) {
-          let current: MiddlewareInterface = command.shift() as MiddlewareInterface;
+      }
 
-          // @ts-ignore
-          return Promise.resolve(current.handle(...args, ...arg)).then(next);
-          //return next().then(spread(next));
-          //return Promise.resolve(current.handle(next, ...arg));
-        } else {
-          return Promise.resolve(arg[0]);
-        }
-      };
+      let current: MiddlewareInterface = command.shift() as MiddlewareInterface;
+      let ret = current.handle(next, ...result);
+
+      if (isPromiseLike(ret)) {
+        ret = ret.then(function(result: any) {
+          if (isArray(result)) {
+            return next(...result);
+          }
+          return next(result);
+        });
+      }
+
+      if (isPromiseLike(first)) {
+        return (first as Promise<any>).then(function() {
+          return ret;
+        });
+      }
+      return ret;
+    };
+    let ret = next(...args);
+    if (isFunction(callback)) {
+      return ret;
     }
-
-    return next();
+    return Promise.resolve(ret);
   }
 
   /**
@@ -60,7 +76,7 @@ export default class PipeLine implements PipeLineInterface {
    * @param terminal
    */
   public through(middleWares: (string | MiddlewareInterface)[], terminal: boolean = true) {
-    let existsMiddleWares = RouterMiddleware.middleWares;
+    let existsMiddleWares = this.existsCommand;
     this.command = middleWares.map(middle => {
       if (!isString(middle)) {
         return middle;
@@ -78,8 +94,8 @@ export default class PipeLine implements PipeLineInterface {
           })
         : [];
 
-      if (existsMiddleWares[fnName]) {
-        let middle: MiddlewareInterface = new existsMiddleWares[fnName];
+      if (existsMiddleWares && existsMiddleWares[fnName]) {
+        let middle: MiddlewareInterface = new existsMiddleWares[fnName]();
         if (isOptional) {
           middle.optional();
         }
