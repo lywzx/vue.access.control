@@ -33,9 +33,65 @@ export default class PipeLine implements PipeLineInterface {
     let args = this.args;
     let next: Function;
     let self = this;
-    next = function(...result: any[]): void | Promise<any[]> {
+    /*let queueWithCallback = function(...result: any[]): void {
+      if (command.length) {
+        let current = command.shift() as MiddlewareInterface;
+        current.handle(queueWithCallback, ...result);
+      }
+    };
+    let queueWithPromise = function(...result: any[]): Promise<any> {
+      if (command.length) {
+        let current = command.shift() as MiddlewareInterface;
+        let ret = current.handle(...result);
+        return ret.then(function(res: any[]) {
+          queueWithCallback(...res);
+        });
+      }
+      return Promise.resolve(result);
+    };*/
+
+    let returnType = 'common';
+    let queueWithPromiseOrCallback = function(...result: any[]): Promise<any[]> | void {
+      if (command.length) {
+        let current = command.shift() as MiddlewareInterface;
+        let ret;
+        if (returnType === 'promise') {
+          ret = new Promise(function(resolve, reject) {
+            let res = current.handle(function(...result: any[]) {
+              resolve(result);
+            }, ...result);
+            if (isPromiseLike(res)) {
+              res
+                .then(function(resultWithPromise: any[]) {
+                  resolve(resultWithPromise);
+                })
+                .catch(reject);
+            }
+          });
+        } else {
+          ret = current.handle(queueWithPromiseOrCallback, ...result);
+        }
+        if (isPromiseLike(ret)) {
+          returnType = 'promise';
+          return ret.then(function(res: any[]) {
+            return queueWithPromiseOrCallback(...res);
+          });
+        }
+      } else {
+        if (isFunction(callback)) {
+          callback(...result);
+        } else {
+          return Promise.resolve(result);
+        }
+      }
+    };
+
+    /*next = function(...result: any[]): void | Promise<any[]> | any[] {
+      console.log('run');
+      debugger;
       let first = result && result[0];
       if ((self.handleBreak && self.handleBreak(result)) || !command.length) {
+        debugger;
         if (isFunction(callback)) {
           return callback(...result);
         } else if (isPromiseLike(first)) {
@@ -49,11 +105,19 @@ export default class PipeLine implements PipeLineInterface {
       let ret = current.handle(next, ...result);
 
       if (isPromiseLike(ret)) {
-        ret = ret.then(function(result: any) {
+        return ret.then(function(result: any) {
+          debugger;
+          let nextRet;
           if (isArray(result)) {
-            return next(...result);
+            nextRet = next(...result);
+          } else {
+            nextRet = next(result);
           }
-          return next(result);
+          if (nextRet !== undefined) {
+            return nextRet;
+          } else {
+            debugger;
+          }
         });
       }
 
@@ -62,13 +126,15 @@ export default class PipeLine implements PipeLineInterface {
           return ret;
         });
       }
-      return ret;
+      return next(...result);
     };
     let ret = next(...args);
     if (isFunction(callback)) {
       return ret;
     }
-    return Promise.resolve(ret);
+    return Promise.resolve(ret);*/
+
+    return queueWithPromiseOrCallback(...args);
   }
 
   /**

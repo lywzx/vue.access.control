@@ -42,6 +42,7 @@ describe('PipeLine Test', function(): void {
       .send(100)
       .through([new Task1(), new Task2(), new Task1(), new Task2()])
       .then(function(result: number) {
+        debugger
         expect(result).to.be.eq(104);
         done();
       });
