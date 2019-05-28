@@ -31,8 +31,6 @@ export default class PipeLine implements PipeLineInterface {
   public then(callback?: Function): void | Promise<any[]> {
     let command = this.command;
     let args = this.args;
-    let next: Function;
-    let self = this;
     /*let queueWithCallback = function(...result: any[]): void {
       if (command.length) {
         let current = command.shift() as MiddlewareInterface;
@@ -50,7 +48,7 @@ export default class PipeLine implements PipeLineInterface {
       return Promise.resolve(result);
     };*/
 
-    let returnType = 'common';
+    let returnType = isFunction(callback) ? 'common' : 'promise';
     let queueWithPromiseOrCallback = function(...result: any[]): Promise<any[]> | void {
       if (command.length) {
         let current = command.shift() as MiddlewareInterface;
