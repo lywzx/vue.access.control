@@ -18,6 +18,7 @@ import AccessConstructorOptions from './types/AccessConstructorOptions';
 import RouterMiddleware from './router/RouterMiddleware';
 import AccessVmData from './types/AccessVmData';
 import AccessUserOptions from './types/AccessUserOptions';
+import LoginMiddleware from "./router/middle/LoginMiddleware";
 
 let Vue: typeof VueConstructor;
 
@@ -433,6 +434,12 @@ export const install = function(_Vue: typeof VueConstructor, Options?: AccessOpt
   }
   if (Access.defaultOptions.globalMiddleware) {
     RouterMiddleware.setGlobalMiddleWares(Access.defaultOptions.globalMiddleware);
+  }
+  if (Access.defaultOptions.loginRoute) {
+    LoginMiddleware.loginName = Access.defaultOptions.loginRoute;
+  }
+  if (Access.defaultOptions.defaultPage) {
+    LoginMiddleware.defaultPage = Access.defaultOptions.defaultPage;
   }
   ApplyMixin(Vue);
   installFn(Vue);

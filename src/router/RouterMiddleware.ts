@@ -1,11 +1,11 @@
 import { RouteConfig, VueRouter, Route } from 'vue-router/types/router';
 import RouterMiddlewareConstructorOptions from '../types/RouterMiddlewareConstructorOptions';
 import defaultMiddleWares from './middle/index';
-import PipeLine from '../class/PipeLine';
 import { Access } from '../Access';
 import { uniq } from 'lodash';
 import Queue from '../class/Queue';
 import QueueTask from '../class/QueueTask';
+import RouterMiddlewarePipeline from './RouterMiddlewarePipeline';
 
 export default class RouterMiddleware {
   public static middleWares: Record<string, any> = defaultMiddleWares;
@@ -63,10 +63,9 @@ export default class RouterMiddleware {
     this.queue.addCommand(
       new class RouterMiddleQueueTask extends QueueTask {
         public handle(next: Function): any {
-          new PipeLine(RouterMiddleware.middleWares)
-            .send(scope, to, from)
-            .through(middleWares, options.terminal || false)
-            .then(function(result: any) {
+          new RouterMiddlewarePipeline(RouterMiddleware.middleWares)
+            .through(middleWares, options.terminal || false, [scope, to, from])
+            .run(function(result: any) {
               options.next(result);
               next();
             });

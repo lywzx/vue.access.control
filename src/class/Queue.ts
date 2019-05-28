@@ -14,9 +14,8 @@ export default class Queue extends PipeLine {
 
   /**
    * won't be break
-   * @param result
    */
-  public handleBreak(result: any): boolean {
+  public whenBreak(): boolean {
     return false;
   }
 
@@ -29,7 +28,7 @@ export default class Queue extends PipeLine {
       this.command.push(...args);
     } else {
       this.running = true;
-      this.through(args).then(() => {
+      this.through(args).run(() => {
         this.running = false;
       });
     }

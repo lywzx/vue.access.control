@@ -1,17 +1,18 @@
-import { Route, VueRouter } from 'vue-router/types/router';
-import MiddlewareInterface from '../../interface/MiddlewareInterface';
+import { RawLocation, Route, VueRouter } from 'vue-router/types/router';
 import { Access } from '../../Access';
-import { isFunction, isObject } from 'lodash';
-import { assert } from '../../util';
+import { isFunction } from 'lodash';
+import { assert, isPromiseLike } from '../../util';
+import MiddlewareHandle from '../../class/MiddlewareHandle';
+import MiddlewareInterface from '../../interface/MiddlewareInterface';
 
-export default class LoginMiddleware implements MiddlewareInterface {
-  private args: any[] = [];
+export default class LoginMiddleware extends MiddlewareHandle implements MiddlewareInterface {
+  public static loginName: RawLocation;
 
-  private _isOptional: boolean = false;
-
-  private _isTerminal: boolean = false;
+  public static defaultPage: RawLocation;
 
   public static handleExtend: (next?: (arg: boolean) => void, ...args: any[]) => Promise<boolean> | void;
+
+  public static notLoginWithTips: (next: Function) => void;
 
   /**
    * @param next
@@ -20,13 +21,30 @@ export default class LoginMiddleware implements MiddlewareInterface {
    * @param from
    * @param args
    */
-  public handle(next: Function, router: VueRouter, to: Route, from: Route, ...args: any[]): void {
+  public handle(next: Function, router: VueRouter, to: Route, from: Route, showTip: boolean = false): void {
     // hack sometimes may can't get access instance, but i don't know why
     // @ts-ignore
     let access = (router.app.$access || router.app.$options.access) as Access;
     let loginStatus = access.isLogin();
     let nextAction = () => {
-      next(access.isLogin() || this.isOptional() ? undefined : false);
+      let isLogin = access.isLogin();
+      let isOptional = this.isOptional();
+      let isTerminal = this.isTerminal();
+      if (isTerminal || !isFunction(LoginMiddleware.notLoginWithTips) || !LoginMiddleware.loginName) {
+        next(isLogin || isOptional ? undefined : false);
+      } else if (isOptional || isLogin) {
+        next();
+      } else if (!isLogin) {
+        LoginMiddleware.notLoginWithTips(function(result: boolean) {
+          if (result) {
+            next(LoginMiddleware.loginName);
+          } else {
+            next(from.matched.length || LoginMiddleware.defaultPage === null ? false : LoginMiddleware.defaultPage);
+          }
+        });
+      } else {
+        next(false);
+      }
     };
     if (loginStatus === undefined) {
       let handleExtend = LoginMiddleware.handleExtend;
@@ -41,12 +59,12 @@ export default class LoginMiddleware implements MiddlewareInterface {
         router,
         to,
         from,
-        ...args
+        showTip
       );
 
       // is promise
-      if (isObject(result) && isFunction(result.then)) {
-        result
+      if (isPromiseLike(result)) {
+        (result as Promise<any>)
           .then(result => {
             access.accessData.userOptions.isLogin = result;
           })
@@ -58,33 +76,5 @@ export default class LoginMiddleware implements MiddlewareInterface {
     } else {
       nextAction();
     }
-  }
-
-  public clearArgs() {
-    this.args = [];
-    return this;
-  }
-
-  public setArgs(args: any[]) {
-    this.args = args;
-    return this;
-  }
-
-  public optional(optional: boolean = true) {
-    this._isOptional = optional;
-    return this;
-  }
-
-  public isTerminal(): boolean {
-    return this._isTerminal;
-  }
-
-  public terminal(terminal: boolean) {
-    this._isTerminal = terminal;
-    return this;
-  }
-
-  public isOptional(): boolean {
-    return this._isOptional;
   }
 }

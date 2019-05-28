@@ -1,9 +1,11 @@
 import PipeLineInterface from '../interface/PipeLineInterface';
-import { isString, trim, isFunction, isArray } from 'lodash';
+import { isString, trim, isFunction } from 'lodash';
 import { assert, isPromiseLike } from '../util';
 import MiddlewareInterface from '../interface/MiddlewareInterface';
 
 export default class PipeLine implements PipeLineInterface {
+  [x: string]: any;
+
   public constructor(protected existsCommand?: Record<string, any>) {}
   /**
    *
@@ -19,37 +21,29 @@ export default class PipeLine implements PipeLineInterface {
     return this;
   }
 
+  /**
+   * @param args
+   */
   public send(...args: any[]) {
     this.args = args;
     return this;
   }
 
-  public handleBreak(result: any): boolean {
-    return result === false;
-  }
-
-  public then(callback?: Function): void | Promise<any[]> {
-    let command = this.command;
-    let args = this.args;
-    /*let queueWithCallback = function(...result: any[]): void {
-      if (command.length) {
-        let current = command.shift() as MiddlewareInterface;
-        current.handle(queueWithCallback, ...result);
-      }
-    };
-    let queueWithPromise = function(...result: any[]): Promise<any> {
-      if (command.length) {
-        let current = command.shift() as MiddlewareInterface;
-        let ret = current.handle(...result);
-        return ret.then(function(res: any[]) {
-          queueWithCallback(...res);
-        });
-      }
-      return Promise.resolve(result);
-    };*/
+  public run(): Promise<any[]>;
+  public run(callback: Function): void;
+  public run(callback?: Function): void | Promise<any[]> {
+    let that = this;
+    let command = that.command;
+    let args = that.args;
 
     let returnType = isFunction(callback) ? 'common' : 'promise';
     let queueWithPromiseOrCallback = function(...result: any[]): Promise<any[]> | void {
+      if (that.whenBreak) {
+        if (that.whenBreak(...result)) {
+          command = [];
+          that.command = [];
+        }
+      }
       if (command.length) {
         let current = command.shift() as MiddlewareInterface;
         let ret;
@@ -84,65 +78,24 @@ export default class PipeLine implements PipeLineInterface {
       }
     };
 
-    /*next = function(...result: any[]): void | Promise<any[]> | any[] {
-      console.log('run');
-      debugger;
-      let first = result && result[0];
-      if ((self.handleBreak && self.handleBreak(result)) || !command.length) {
-        debugger;
-        if (isFunction(callback)) {
-          return callback(...result);
-        } else if (isPromiseLike(first)) {
-          return first;
-        } else {
-          return Promise.resolve(result);
-        }
-      }
-
-      let current: MiddlewareInterface = command.shift() as MiddlewareInterface;
-      let ret = current.handle(next, ...result);
-
-      if (isPromiseLike(ret)) {
-        return ret.then(function(result: any) {
-          debugger;
-          let nextRet;
-          if (isArray(result)) {
-            nextRet = next(...result);
-          } else {
-            nextRet = next(result);
-          }
-          if (nextRet !== undefined) {
-            return nextRet;
-          } else {
-            debugger;
-          }
-        });
-      }
-
-      if (isPromiseLike(first)) {
-        return (first as Promise<any>).then(function() {
-          return ret;
-        });
-      }
-      return next(...result);
-    };
-    let ret = next(...args);
-    if (isFunction(callback)) {
-      return ret;
-    }
-    return Promise.resolve(ret);*/
-
     return queueWithPromiseOrCallback(...args);
   }
 
   /**
    * @param middleWares
    * @param terminal
+   * @param injected
    */
-  public through(middleWares: (string | MiddlewareInterface)[], terminal: boolean = true) {
+  public through(middleWares: (string | MiddlewareInterface)[], terminal: boolean = true, injected: any[] = []) {
     let existsMiddleWares = this.existsCommand;
     this.command = middleWares.map(middle => {
       if (!isString(middle)) {
+        if (injected.length && 'prePendArgs' in middle) {
+          // @ts-ignore
+          middle.prePendArgs(injected);
+        } else {
+          middle.clearArgs().setArgs(injected);
+        }
         return middle;
       }
       let [fnName, fnArgString] = middle.split(':');
@@ -166,7 +119,7 @@ export default class PipeLine implements PipeLineInterface {
         return middle
           .terminal(terminal)
           .clearArgs()
-          .setArgs(fnArgs);
+          .setArgs(injected.concat(fnArgs));
       }
 
       assert(false, `middleware name: ${fnName} not defined, please call RouterMiddleware:extend define '${fnName}'`);

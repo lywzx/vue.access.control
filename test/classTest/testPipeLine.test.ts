@@ -33,7 +33,7 @@ describe('PipeLine Test', function(): void {
   });
 
   it('pipeline with sync callback', function(done) {
-    createTask(100, 5, [Task5]).then(function(result: any) {
+    createTask(100, 5, [Task5]).run(function(result: any) {
       expect(result).to.be.eq(105);
       done();
     });
@@ -41,7 +41,7 @@ describe('PipeLine Test', function(): void {
 
   it('pipeline with async callback', function(done) {
     this.timeout(5 * 1000);
-    createTask(100, 15, [Task1]).then(function(result: any) {
+    createTask(100, 15, [Task1]).run(function(result: any) {
       expect(result).to.be.eq(115);
       done();
     });
@@ -49,7 +49,7 @@ describe('PipeLine Test', function(): void {
 
   it('pipeline with sync and sync callback', function(done) {
     this.timeout(5 * 1000);
-    createTask(100, 103, [Task1, Task5]).then(function(result: any) {
+    createTask(100, 103, [Task1, Task5]).run(function(result: any) {
       expect(result).to.be.eq(203);
       done();
     });
@@ -58,7 +58,8 @@ describe('PipeLine Test', function(): void {
   it('pipeline with promise', function(done) {
     this.timeout(5000);
     let length = 199;
-    (createTask(100, length, [Task2]).then() as Promise<any>)
+    createTask(100, length, [Task2])
+      .run()
       .then(function(result) {
         expect(result[0]).to.be.eq(length + 100);
         done();
@@ -70,7 +71,8 @@ describe('PipeLine Test', function(): void {
     this.timeout(5000);
 
     let length = random(0, 150);
-    (createTask(100, length, [Task2, Task1]).then() as Promise<any[]>)
+    createTask(100, length, [Task2, Task1])
+      .run()
       .then(function(result: any) {
         expect(result[0]).to.be.eq(length + 100);
         done();
@@ -81,7 +83,7 @@ describe('PipeLine Test', function(): void {
   it('pipeline with multigroup callback value', function(done) {
     let length = 124;
     let initValue = [100, 109, 520];
-    createTask(initValue, length, [Task3]).then(function(...result: number[]) {
+    createTask(initValue, length, [Task3]).run(function(...result: number[]) {
       assert.deepEqual(result, map(initValue, item => item + length));
       done();
     });
@@ -93,7 +95,7 @@ describe('PipeLine Test', function(): void {
     pipeLine
       .send(100, 102, 104)
       .through([new Task4(), new Task4(), new Task4(), new Task4()])
-      .then(function(...result: any[]) {
+      .run(function(...result: any[]) {
         assert.deepEqual([104, 106, 108], result);
         done();
       });
@@ -105,7 +107,7 @@ describe('PipeLine Test', function(): void {
     (pipeLine
       .send(undefined, 102, 104)
       .through([new Task4(), new Task3(), new Task4(), new Task3()])
-      .then() as Promise<any>).then(function(result: any[]) {
+      .run() as Promise<any>).then(function(result: any[]) {
       assert.deepEqual([4, 106, 108], result);
       done();
     });
@@ -120,7 +122,7 @@ describe('PipeLine Test', function(): void {
       cal.push(init + length);
       let task = createTask(init, length, [Task3, Task4]);
       return new Promise(function(resolve, reject) {
-        task.then(function(result: any) {
+        task.run(function(result: any) {
           resolve(result);
         });
       });
@@ -144,7 +146,7 @@ describe('PipeLine Test', function(): void {
     pipeLine
       .send(params)
       .through(times(length, () => new Task6()))
-      .then(function(res: { run: number }) {
+      .run(function(res: { run: number }) {
         result = res;
       });
 
@@ -153,5 +155,22 @@ describe('PipeLine Test', function(): void {
     } else {
       assert.fail();
     }
+  });
+
+  it('test break logic', function(done) {
+    let pipeLine = new class PipeLineWithBreak extends PipeLine {
+      public whenBreak(result: any): boolean {
+        return result >= 100;
+      }
+    }();
+
+    let length = random(102, 199);
+    pipeLine
+      .send(1)
+      .through(times(length, () => new Task1()))
+      .run(function(result: any) {
+        expect(result).to.be.eq(100);
+        done();
+      });
   });
 });

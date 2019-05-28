@@ -3,9 +3,10 @@ export default interface PipeLineInterface {
 
   send(...args: any[]): PipeLineInterface;
 
-  through(middleWares: string[]): PipeLineInterface;
+  through(middleWares: string[], terminal?: boolean, injected?: any[]): PipeLineInterface;
 
-  then(callback?: Function): void | Promise<any>;
+  run(): Promise<any>;
+  run(callback: Function): void;
 
-  handleBreak?(res: any): boolean;
+  whenBreak?(...res: any): boolean;
 }

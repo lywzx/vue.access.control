@@ -3,6 +3,7 @@ import { Route, VueRouter } from 'vue-router/types/router';
 import { Access } from '../../Access';
 import { isFunction } from 'lodash';
 import { handleFnType } from '../../types/TypesAccessMiddleware';
+import MiddlewareHandle from '../../class/MiddlewareHandle';
 
 let methodAlias = {
   role: 'hasRole',
@@ -10,59 +11,27 @@ let methodAlias = {
   ability: 'ability',
 };
 
-export default class AccessRoleMiddleware implements MiddlewareInterface {
+export default class AccessRoleMiddleware extends MiddlewareHandle implements MiddlewareInterface {
   protected _methodName: handleFnType = 'role';
 
-  protected _isOptional: boolean = false;
-
-  protected _isTerminal: boolean = false;
-
-  protected args: any[] = [];
-
-  public handle(next: Function, router: VueRouter, to: Route, from: Route): void {
+  public handle(next: Function, router: VueRouter, to: Route, from: Route, role: any, permission?: any): void {
     let app = router.app as { $access?: Access };
-    let args = this.args;
     if (app.$access) {
       let access = app.$access as Access;
       let result;
       // @ts-ignore
       if (methodAlias[this._methodName] && access && isFunction(access[methodAlias[this._methodName]])) {
         // @ts-ignore
-        result = access[methodAlias[this._methodName]](args[0], args[1] || undefined);
+        result = access[methodAlias[this._methodName]](role, permission);
       }
 
       if (result === true || result === false) {
+        if (result === false && !this.isTerminal()) {
+          access.$emit('route:middleware:access:deny', role, permission);
+        }
         return next(result);
       }
     }
     next(true);
-  }
-
-  public clearArgs() {
-    this.args = [];
-    return this;
-  }
-
-  public setArgs(args: any[]) {
-    this.args = args;
-    return this;
-  }
-
-  public optional(optional: boolean = true) {
-    this._isOptional = optional;
-    return this;
-  }
-
-  public isTerminal(): boolean {
-    return this._isTerminal;
-  }
-
-  public terminal(terminal: boolean) {
-    this._isTerminal = terminal;
-    return this;
-  }
-
-  public isOptional(): boolean {
-    return this._isOptional;
   }
 }
