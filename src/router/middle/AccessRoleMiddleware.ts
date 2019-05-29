@@ -29,9 +29,9 @@ export default class AccessRoleMiddleware extends MiddlewareHandle implements Mi
         if (result === false && !this.isTerminal()) {
           access.$emit('route:middleware:access:deny', role, permission);
         }
-        return next(result);
+        return next(result === true ? undefined : result);
       }
     }
-    next(true);
+    next();
   }
 }

@@ -19,9 +19,9 @@ export default class LoginMiddleware extends MiddlewareHandle implements Middlew
    * @param router
    * @param to
    * @param from
-   * @param args
+   * @param showTip
    */
-  public handle(next: Function, router: VueRouter, to: Route, from: Route, showTip: boolean = false): void {
+  public handle(next: Function, router: VueRouter, to: Route, from: Route, showTip: boolean = true): void {
     // hack sometimes may can't get access instance, but i don't know why
     // @ts-ignore
     let access = (router.app.$access || router.app.$options.access) as Access;
