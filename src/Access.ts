@@ -18,7 +18,8 @@ import AccessConstructorOptions from './types/AccessConstructorOptions';
 import RouterMiddleware from './router/RouterMiddleware';
 import AccessVmData from './types/AccessVmData';
 import AccessUserOptions from './types/AccessUserOptions';
-import LoginMiddleware from "./router/middle/LoginMiddleware";
+import LoginMiddleware from './router/middle/LoginMiddleware';
+import AccessRoleMiddleware from "./router/middle/AccessRoleMiddleware";
 
 let Vue: typeof VueConstructor;
 
@@ -326,7 +327,7 @@ export class Access {
    * @param obj
    */
   public setExtendInfo(obj: Record<string, any>) {
-    this.accessData.extendData = /*Object.freeze(*/extend({}, this.accessData.extendData, obj);/*);*/
+    this.accessData.extendData = /*Object.freeze(*/ extend({}, this.accessData.extendData, obj); /*);*/
     return this;
   }
 
@@ -438,8 +439,11 @@ export const install = function(_Vue: typeof VueConstructor, Options?: AccessOpt
   if (Access.defaultOptions.loginRoute) {
     LoginMiddleware.loginName = Access.defaultOptions.loginRoute;
   }
-  if (Access.defaultOptions.defaultPage) {
-    LoginMiddleware.defaultPage = Access.defaultOptions.defaultPage;
+  if (Access.defaultOptions.defaultRoute) {
+    LoginMiddleware.defaultRoute = Access.defaultOptions.defaultRoute;
+  }
+  if (Access.defaultOptions.permissionDenyRedirectRoute) {
+    AccessRoleMiddleware.permissionDenyRedirectRoute = Access.defaultOptions.permissionDenyRedirectRoute;
   }
   ApplyMixin(Vue);
   installFn(Vue);

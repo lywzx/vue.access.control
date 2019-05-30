@@ -8,7 +8,7 @@ import MiddlewareHandleOptions from '../../types/MiddlewareHandleOptions';
 export default class LoginMiddleware extends MiddlewareHandle implements MiddlewareInterface {
   public static loginName: RawLocation;
 
-  public static defaultPage: RawLocation;
+  public static defaultRoute: RawLocation;
 
   public static handleExtend: (next?: (arg: boolean) => void, ...args: any[]) => Promise<boolean> | void;
 
@@ -39,7 +39,7 @@ export default class LoginMiddleware extends MiddlewareHandle implements Middlew
           if (result) {
             next(LoginMiddleware.loginName);
           } else {
-            next(from.matched.length || LoginMiddleware.defaultPage === null ? false : LoginMiddleware.defaultPage);
+            next(from.matched.length || LoginMiddleware.defaultRoute === null ? false : LoginMiddleware.defaultRoute);
           }
         });
       } else {
