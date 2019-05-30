@@ -1,9 +1,9 @@
-import { RawLocation, Route, VueRouter } from 'vue-router/types/router';
-import { Access } from '../../Access';
+import { RawLocation } from 'vue-router/types/router';
 import { isFunction } from 'lodash';
 import { assert, isPromiseLike } from '../../util';
 import MiddlewareHandle from '../../class/MiddlewareHandle';
 import MiddlewareInterface from '../../interface/MiddlewareInterface';
+import MiddlewareHandleOptions from '../../types/MiddlewareHandleOptions';
 
 export default class LoginMiddleware extends MiddlewareHandle implements MiddlewareInterface {
   public static loginName: RawLocation;
@@ -19,12 +19,12 @@ export default class LoginMiddleware extends MiddlewareHandle implements Middlew
    * @param router
    * @param to
    * @param from
+   * @param access
    * @param showTip
    */
-  public handle(next: Function, router: VueRouter, to: Route, from: Route, showTip: boolean = true): void {
+  public handle(next: Function, { router, to, from, access }: MiddlewareHandleOptions, showTip: boolean = true): void {
     // hack sometimes may can't get access instance, but i don't know why
     // @ts-ignore
-    let access = (router.app.$access || router.app.$options.access) as Access;
     let loginStatus = access.isLogin();
     let nextAction = () => {
       let isLogin = access.isLogin();

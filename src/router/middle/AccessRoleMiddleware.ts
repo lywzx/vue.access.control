@@ -1,9 +1,8 @@
 import MiddlewareInterface from '../../interface/MiddlewareInterface';
-import { Route, VueRouter } from 'vue-router/types/router';
-import { Access } from '../../Access';
 import { isFunction } from 'lodash';
 import { handleFnType } from '../../types/TypesAccessMiddleware';
 import MiddlewareHandle from '../../class/MiddlewareHandle';
+import MiddlewareHandleOptions from '../../types/MiddlewareHandleOptions';
 
 let methodAlias = {
   role: 'hasRole',
@@ -14,10 +13,8 @@ let methodAlias = {
 export default class AccessRoleMiddleware extends MiddlewareHandle implements MiddlewareInterface {
   protected _methodName: handleFnType = 'role';
 
-  public handle(next: Function, router: VueRouter, to: Route, from: Route, role: any, permission?: any): void {
-    let app = router.app as { $access?: Access };
-    if (app.$access) {
-      let access = app.$access as Access;
+  public handle(next: Function, { access }: MiddlewareHandleOptions, role: any, permission?: any): void {
+    if (access) {
       let result;
       // @ts-ignore
       if (methodAlias[this._methodName] && access && isFunction(access[methodAlias[this._methodName]])) {

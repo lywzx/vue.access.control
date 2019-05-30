@@ -58,13 +58,20 @@ export default class RouterMiddleware {
     let middlewFn = this.getMiddleWareFn(middleware, next);
 
     middlewFn.call(scope, to, from);*/
+    let that = this;
     let middleWares = this.getCurrentMiddleWares(options.middleware);
-
     this.queue.addCommand(
       new class RouterMiddleQueueTask extends QueueTask {
         public handle(next: Function): any {
           new RouterMiddlewarePipeline(RouterMiddleware.middleWares)
-            .through(middleWares, options.terminal || false, [scope, to, from])
+            .through(middleWares, options.terminal || false, [
+              {
+                router: scope,
+                to: to,
+                from: from,
+                access: that.access,
+              },
+            ])
             .run(function(result: any) {
               options.next(result);
               next();
