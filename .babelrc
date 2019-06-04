@@ -1,0 +1,18 @@
+{
+  "presets": ["env"],
+  "plugins": [
+    "transform-object-rest-spread",
+    ["import", [
+      {
+        "libraryName": "vue-antd-ui",
+        "libraryDirectory": "es",
+        "style": "css"
+      },
+      {
+        "libraryName": "lodash",
+        "libraryDirectory": "",
+        "camel2DashComponentName": false  // default: true
+      }
+    ]]
+  ]
+}
