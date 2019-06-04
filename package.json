@@ -1,6 +1,6 @@
 {
   "name": "@lywzx/vue.access.control",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "vue access control",
   "main": "dist/index.js",
   "directories": {
@@ -10,7 +10,9 @@
     "dev": "node examples/server.js",
     "test": "mocha --require ts-node/register test/*.ts",
     "build": "tsc",
-    "lint": "eslint src --ext .ts --fix"
+    "lint": "eslint src --ext .ts --fix",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
   },
   "repository": {
     "type": "git",
@@ -22,7 +24,10 @@
     "control",
     "acl"
   ],
-  "author": "liuyang",
+  "author": {
+    "name": "liuyang",
+    "email": "liu88yang889@163.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/lywzx/vue.access.control/issues"
@@ -65,6 +70,7 @@
     "vue-property-decorator": "^8.1.1",
     "vue-router": "^3.0.6",
     "vue-template-compiler": "^2.6.10",
+    "vuepress": "^0.14.11",
     "webpack": "^4.31.0",
     "webpack-dev-middleware": "^3.6.2",
     "webpack-hot-middleware": "^2.24.4"

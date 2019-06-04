@@ -19,7 +19,7 @@ import RouterMiddleware from './router/RouterMiddleware';
 import AccessVmData from './types/AccessVmData';
 import AccessUserOptions from './types/AccessUserOptions';
 import LoginMiddleware from './router/middle/LoginMiddleware';
-import AccessRoleMiddleware from "./router/middle/AccessRoleMiddleware";
+import AccessRoleMiddleware from './router/middle/AccessRoleMiddleware';
 
 let Vue: typeof VueConstructor;
 
@@ -374,14 +374,18 @@ export class Access {
  * @returns {Vue}
  */
 function resetUserInfoVm(access: Access, accessVmData: AccessVmData): VueConstructor {
-  return new VueConstructor({
-    data() {
-      // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
-      return {
-        access: accessVmData,
-        user: undefined,
-      } as { access: AccessVmData; user?: User };
-    },
+  // use a Vue instance to store the state tree
+  // suppress warnings just in case the user has added
+  // some funky global mixins
+  const silent = Vue.config.silent;
+  Vue.config.silent = true;
+
+  let vm = new Vue({
+    // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
+    data: {
+      access: accessVmData,
+      user: undefined,
+    } as { access: AccessVmData; user?: User },
     watch: {
       'access.userOptions': {
         handler(current: AccessUserOptions, last?: AccessUserOptions) {
@@ -415,6 +419,8 @@ function resetUserInfoVm(access: Access, accessVmData: AccessVmData): VueConstru
       );
     },
   });
+  Vue.config.silent = silent;
+  return vm;
 }
 
 /**
@@ -446,5 +452,7 @@ export const install = function(_Vue: typeof VueConstructor, Options?: AccessOpt
     AccessRoleMiddleware.permissionDenyRedirectRoute = Access.defaultOptions.permissionDenyRedirectRoute;
   }
   ApplyMixin(Vue);
-  installFn(Vue);
+  if (Options && Options.vueRouter) {
+    installFn(Vue);
+  }
 };
