@@ -13,7 +13,7 @@ export const installFn = function(Vue: typeof VueConstructor) {
   // registry components
   each(components, function(value, name: string) {
     if (name === 'AccessRouterLink') {
-      let routerLink = Vue.component('router-link');
+      let routerLink = Vue.component('RouterLink');
       // @ts-ignore
       assert(routerLink as boolean, 'please call method Vue.use(VueRouter) before Vue.use(VueAccessControl)');
       value = extend(value, {
