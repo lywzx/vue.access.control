@@ -1,6 +1,6 @@
 {
   "name": "@lywzx/vue.access.control",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "vue access control",
   "main": "dist/index.js",
   "directories": {
@@ -34,12 +34,12 @@
   },
   "homepage": "https://github.com/lywzx/vue.access.control#readme",
   "dependencies": {
-    "@lywzx/access.control": "^1.0.1",
-    "lodash": "^4.17.11"
+    "@lywzx/access.control": "^1.0.3",
+    "lodash-es": "^4.17.11"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.3",
     "@types/chai": "^4.1.7",
-    "@types/lodash": "^4.14.125",
     "@types/mocha": "^5.2.6",
     "@types/node": "^12.0.0",
     "@typescript-eslint/eslint-plugin": "^1.7.0",
@@ -70,7 +70,7 @@
     "vue-property-decorator": "^8.1.1",
     "vue-router": "^3.0.6",
     "vue-template-compiler": "^2.6.10",
-    "vuepress": "^0.14.11",
+    "vuepress": "^1.0.1",
     "webpack": "^4.31.0",
     "webpack-dev-middleware": "^3.6.2",
     "webpack-hot-middleware": "^2.24.4"
