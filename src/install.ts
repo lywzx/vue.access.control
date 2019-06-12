@@ -1,7 +1,7 @@
 import * as directives from './directives/index';
 import * as components from './components/index';
 import { Vue as VueConstructor } from 'vue-property-decorator';
-import { each, extend } from 'lodash';
+import { each, extend } from 'lodash-es';
 import { assert } from './util';
 
 export const installFn = function(Vue: typeof VueConstructor) {
@@ -13,7 +13,7 @@ export const installFn = function(Vue: typeof VueConstructor) {
   // registry components
   each(components, function(value, name: string) {
     if (name === 'AccessRouterLink') {
-      let routerLink = Vue.component('router-link');
+      let routerLink = Vue.component('RouterLink') || Vue.component('router-link');
       // @ts-ignore
       assert(routerLink as boolean, 'please call method Vue.use(VueRouter) before Vue.use(VueAccessControl)');
       value = extend(value, {

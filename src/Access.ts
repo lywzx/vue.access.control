@@ -1,7 +1,7 @@
 import { Vue as VueConstructor } from 'vue-property-decorator';
 import { installFn } from './install';
 import { assert } from './util';
-import { extend, pick, get } from 'lodash';
+import { extend, pick, get } from 'lodash-es';
 import AccessOptions from './types/AccessOptions';
 import ApplyMixin from './mixin';
 import User from '@lywzx/access.control/dist/User';

@@ -2,7 +2,7 @@ import { RouteConfig, VueRouter, Route } from 'vue-router/types/router';
 import RouterMiddlewareConstructorOptions from '../types/RouterMiddlewareConstructorOptions';
 import defaultMiddleWares from './middle/index';
 import { Access } from '../Access';
-import { uniq } from 'lodash';
+import { uniq } from 'lodash-es';
 import Queue from '../class/Queue';
 import QueueTask from '../class/QueueTask';
 import RouterMiddlewarePipeline from './RouterMiddlewarePipeline';
