@@ -1,6 +1,11 @@
 import { VNode } from 'vue/types/vnode';
 import { Vue } from 'vue-property-decorator';
-import { isString, some, extend, isArray, keys } from 'lodash-es';
+import isString from 'lodash-es/isString';
+import some from 'lodash-es/some';
+import extend from 'lodash-es/extend';
+import isArray from 'lodash-es/isArray';
+import keys from 'lodash-es/keys';
+
 import { Access } from '../Access';
 import { assert } from '../util';
 

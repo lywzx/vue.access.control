@@ -1,7 +1,8 @@
 import * as directives from './directives/index';
 import * as components from './components/index';
 import { Vue as VueConstructor } from 'vue-property-decorator';
-import { each, extend } from 'lodash-es';
+import each from 'lodash-es/each';
+import extend from 'lodash-es/extend';
 import { assert } from './util';
 
 export const installFn = function(Vue: typeof VueConstructor) {

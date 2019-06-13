@@ -1,5 +1,7 @@
 import PipeLineInterface from '../interface/PipeLineInterface';
-import { isString, trim, isFunction } from 'lodash-es';
+import isString from 'lodash-es/isString';
+import trim from 'lodash-es/trim';
+import isFunction from 'lodash-es/isFunction';
 import { assert, isPromiseLike } from '../util';
 import MiddlewareInterface from '../interface/MiddlewareInterface';
 
