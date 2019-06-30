@@ -1,23 +1,26 @@
-const path = require("path");
-const buble = require("rollup-plugin-buble");
-const replace = require("rollup-plugin-replace");
+const path = require('path');
+const buble = require('rollup-plugin-buble');
+const replace = require('rollup-plugin-replace');
 const typescript = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
-const version = process.env.VERSION || require("../package.json").version;
+const commonjs = require('rollup-plugin-commonjs');
+const includePaths = require('rollup-plugin-includepaths');
+
+const version = process.env.VERSION || require('../package.json').version;
 const banner = `/**
  * vue.access.control v${version}
  * (c) ${new Date().getFullYear()} Evan You
  * @license MIT
  */`;
 
-const resolve = _path => path.resolve(__dirname, "../", _path);
+const resolve = _path => path.resolve(__dirname, '../', _path);
 
 const configs = {
   umdDev: {
-    input: resolve("src/index.ts"),
-    file: resolve("dist/index.umd.js"),
-    format: "umd",
-    env: "development"
+    input: resolve('src/index.ts'),
+    file: resolve('dist/index.umd.js'),
+    format: 'umd',
+    env: 'development',
   },
   // umdProd: {
   //   input: resolve("src/index.ts"),
@@ -28,7 +31,7 @@ const configs = {
   //     nodeResolve({
   //       jsnext: true,
   //       extensions: [ '.ts', '.js', '.json' ]
-  //     }), 
+  //     }),
   //     typescript()
   //   ]
   // },
@@ -40,7 +43,7 @@ const configs = {
   //     nodeResolve({
   //       jsnext: true,
   //       extensions: [ '.ts', '.js', '.json' ]
-  //     }), 
+  //     }),
   //     typescript()
   //   ]
   // },
@@ -52,7 +55,7 @@ const configs = {
   //     nodeResolve({
   //       jsnext: true,
   //       extensions: [ '.ts', '.js', '.json' ]
-  //     }), 
+  //     }),
   //     typescript()
   //   ]
   // },
@@ -66,7 +69,7 @@ const configs = {
   //     nodeResolve({
   //       jsnext: true,
   //       extensions: [ '.ts', '.js', '.json' ]
-  //     }), 
+  //     }),
   //     typescript()
   //   ]
   // },
@@ -80,38 +83,51 @@ const configs = {
   //     nodeResolve({
   //       jsnext: true,
   //       extensions: [ '.ts', '.js', '.json' ]
-  //     }), 
+  //     }),
   //     typescript()
   //   ]
   // }
 };
 
 function genConfig(opts) {
+  let includePathOptions = {
+    include: {
+      vue: 'node_modules/vue/dist/vue.common.js',
+      'vue-router': 'node_modules/vue-router/dist/vue-router.js',
+    },
+    external: ['vue', 'vue-router'],
+  };
   const config = {
     input: {
       input: opts.input,
+      globals: {
+        vue: 'Vue',
+        'vue-router': 'VueRouter',
+      },
       plugins: [
+        includePaths(includePathOptions),
         nodeResolve({
-          extensions: [ '.ts', '.js', '.json' ]
-        }), 
+          extensions: ['.ts', '.js', '.json'],
+        }),
         typescript(),
+        commonjs(),
         replace({
-          __VERSION__: version
-        })
-      ]
+          __VERSION__: version,
+        }),
+      ],
     },
     output: {
       banner,
       file: opts.file,
       format: opts.format,
-      name: "vue.access.control"
-    }
+      name: 'vue.access.control',
+    },
   };
 
   if (opts.env) {
     config.input.plugins.unshift(
       replace({
-        "process.env.NODE_ENV": JSON.stringify(opts.env)
+        'process.env.NODE_ENV': JSON.stringify(opts.env),
       })
     );
   }
