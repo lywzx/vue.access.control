@@ -9,7 +9,7 @@ const includePaths = require('rollup-plugin-includepaths');
 const version = process.env.VERSION || require('../package.json').version;
 const banner = `/**
  * vue.access.control v${version}
- * (c) ${new Date().getFullYear()} Evan You
+ * (c) ${new Date().getFullYear()} Lluis Liu
  * @license MIT
  */`;
 
