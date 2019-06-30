@@ -29,6 +29,7 @@ function build(builds) {
 }
 
 function buildEntry({ input, output }) {
+  console.log(input, output);
   const { file, banner } = output;
   const isProd = /min\.js$/.test(file);
   return rollup

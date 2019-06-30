@@ -1,4 +1,5 @@
 const buble = require("rollup-plugin-buble");
+const typescript = require('rollup-plugin-typescript');
 
 module.exports = {
   input: "src/plugins/logger.js",
@@ -7,5 +8,5 @@ module.exports = {
     format: "umd",
     name: "createVuexLogger"
   },
-  plugins: [buble()]
+  plugins: [typescript(), buble()]
 };
