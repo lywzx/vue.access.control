@@ -2,8 +2,9 @@
   "name": "@lywzx/vue.access.control",
   "version": "1.0.8",
   "description": "vue access control",
-  "main": "dist/index.umd.js",
-  "module": "dist/index.umd.js",
+  "main": "dist/index.common.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/typings/index.d.ts",
   "directories": {
     "test": "test"
   },

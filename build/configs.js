@@ -66,10 +66,6 @@ function genConfig(opts) {
     input: {
       external: ['vue', 'vue-router'],
       input: opts.input,
-      globals: {
-        vue: 'Vue',
-        'vue-router': 'VueRouter',
-      },
       treeshake: true,
       plugins: [
         //includePaths(includePathOptions),
@@ -77,6 +73,7 @@ function genConfig(opts) {
           extensions: ['.ts', '.js', '.json'],
         }),
         typescript({
+          inlineSourceMap: false,
           tsconfig: __dirname + '/../tsconfig.json',
           typescript: require('typescript'),
           useTsconfigDeclarationDir: true,
@@ -84,7 +81,7 @@ function genConfig(opts) {
             compilerOptions : {
               module: "es2015"
             }
-          }
+          },
         }),
         commonjs({extensions: ['.js', '.ts']}),
         replace({
@@ -97,7 +94,13 @@ function genConfig(opts) {
       file: opts.file,
       format: opts.format,
       name: 'VueAccessControl',
-      sourcemap: true
+      sourcemap: true,
+      exports: 'named',
+      globals: {
+        vue: 'Vue',
+        'vue-router': 'VueRouter',
+      },
+      external: ['Vue', 'vue-router']
     },
   };
 
