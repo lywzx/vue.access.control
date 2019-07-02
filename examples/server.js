@@ -1,19 +1,24 @@
-const express = require("express");
-const webpack = require("webpack");
-const webpackDevMiddleware = require("webpack-dev-middleware");
-const webpackHotMiddleware = require("webpack-hot-middleware");
-const WebpackConfig = require("./webpack.config");
+// eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-var-requires
+const express = require('express');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const webpack = require('webpack');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const webpackDevMiddleware = require('webpack-dev-middleware');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const webpackHotMiddleware = require('webpack-hot-middleware');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const WebpackConfig = require('./webpack.config');
 
 const app = express();
 const compiler = webpack(WebpackConfig);
 
 app.use(
   webpackDevMiddleware(compiler, {
-    publicPath: "/__build__/",
+    publicPath: '/__build__/',
     stats: {
       colors: true,
-      chunks: false
-    }
+      chunks: false,
+    },
   })
 );
 
