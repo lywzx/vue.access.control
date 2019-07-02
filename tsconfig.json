@@ -7,11 +7,15 @@
     "strict": true,
     "sourceMap": true,
     "types" : ["node"],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
   "include": [
     "src/**/*",
     "src/**/*.vue"
+  ],
+  "exclude": [
+    "node_modules"
   ],
   "typedocOptions": {
     "mode": "modules",

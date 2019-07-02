@@ -1,5 +1,5 @@
 import MiddlewareInterface from '../../interface/MiddlewareInterface';
-import isFunction from 'lodash-es/isFunction';
+import isFunction from 'lodash/isFunction';
 import { handleFnType } from '../../types/TypesAccessMiddleware';
 import MiddlewareHandle from '../../class/MiddlewareHandle';
 import MiddlewareHandleOptions from '../../types/MiddlewareHandleOptions';

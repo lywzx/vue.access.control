@@ -1,27 +1,28 @@
 import { Vue as VueConstructor } from 'vue-property-decorator';
 import { installFn } from './install';
 import { assert } from './util';
-import extend from 'lodash-es/extend';
-import pick from 'lodash-es/pick';
-import get from 'lodash-es/get';
+import extend from 'lodash/extend';
+import pick from 'lodash/pick';
+import get from 'lodash/get';
 import AccessOptions from './types/AccessOptions';
 import ApplyMixin from './mixin';
-import User from '@lywzx/access.control/dist/User';
+import { User } from '@lywzx/access.control';
 import {
   AbilityOptions,
   MapKeyStringValueBoolean,
   RoleAndOwnsOptions,
   RoleTypes,
   StringOrStringArray,
-} from '@lywzx/access.control/dist/types/Types';
-import { Post } from '@lywzx/access.control/dist/types/Post';
-import { getRole, standardize } from '@lywzx/access.control/dist/Util';
+} from '@lywzx/access.control/dist/typings/types/Types';
+import { PostTypes as Post } from '@lywzx/access.control/dist/typings/types/PostTypes';
+import { getRole, standardize } from '@lywzx/access.control';
 import AccessConstructorOptions from './types/AccessConstructorOptions';
 import RouterMiddleware from './router/RouterMiddleware';
 import AccessVmData from './types/AccessVmData';
 import AccessUserOptions from './types/AccessUserOptions';
 import LoginMiddleware from './router/middle/LoginMiddleware';
 import AccessRoleMiddleware from './router/middle/AccessRoleMiddleware';
+
 
 let Vue: typeof VueConstructor;
 
@@ -75,6 +76,7 @@ export class Access {
       install(g.Vue);
     }
 
+    // @ts-ignore
     if (process.env.NODE_ENV !== 'production') {
       assert(!!Vue, 'must call Vue.use(VueAccessControl) before creating a Access instance.');
     }
@@ -432,6 +434,7 @@ function resetUserInfoVm(access: Access, accessVmData: AccessVmData): VueConstru
  */
 export const install = function(_Vue: typeof VueConstructor, Options?: AccessOptions) {
   if (Vue && Vue === _Vue) {
+    // @ts-ignore
     if (process.env.NODE_ENV !== 'production') {
       console.error('[vue.access.control] already installed. Vue.use(VueAccessControl) should be called only once.');
     }

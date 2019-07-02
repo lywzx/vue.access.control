@@ -1,4 +1,4 @@
-import { Role } from '@lywzx/access.control/dist/types/Role';
+import { RoleTypes as Role } from '@lywzx/access.control/dist/typings/types/RoleTypes';
 
 export default interface AccessUserOptions {
   roles: (string | Role)[];

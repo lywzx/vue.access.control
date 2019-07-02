@@ -1,5 +1,5 @@
 import { RawLocation } from 'vue-router/types/router';
-import isFunction from 'lodash-es/isFunction';
+import isFunction from 'lodash/isFunction';
 import { assert, isPromiseLike } from '../../util';
 import MiddlewareHandle from '../../class/MiddlewareHandle';
 import MiddlewareInterface from '../../interface/MiddlewareInterface';

@@ -2,8 +2,8 @@ import { NavigationGuard, Route, RouteRecord, VueRouter } from 'vue-router/types
 import { Access } from '../Access';
 import RouterMiddleware from './RouterMiddleware';
 import { assert } from '../util';
-import flatten from 'lodash-es/flatten';
-import map from 'lodash-es/map';
+import flatten from 'lodash/flatten';
+import map from 'lodash/map';
 
 const beforeEach: NavigationGuard = function(this: VueRouter, to: Route, from: Route, next) {
   let app: any = this.app.$options;

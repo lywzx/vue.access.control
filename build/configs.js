@@ -1,7 +1,7 @@
 const path = require('path');
 const buble = require('rollup-plugin-buble');
 const replace = require('rollup-plugin-replace');
-const typescript = require('rollup-plugin-typescript');
+const typescript = require('rollup-plugin-typescript2');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const includePaths = require('rollup-plugin-includepaths');
@@ -22,71 +22,36 @@ const configs = {
     format: 'umd',
     env: 'development',
   },
-  // umdProd: {
-  //   input: resolve("src/index.ts"),
-  //   file: resolve("dist/index.umd.min.js"),
-  //   format: "umd",
-  //   env: "production",
-  //   plugins: [
-  //     nodeResolve({
-  //       jsnext: true,
-  //       extensions: [ '.ts', '.js', '.json' ]
-  //     }),
-  //     typescript()
-  //   ]
-  // },
-  // commonjs: {
-  //   input: resolve("src/index.ts"),
-  //   file: resolve("dist/index.common.js"),
-  //   format: "cjs",
-  //   plugins: [
-  //     nodeResolve({
-  //       jsnext: true,
-  //       extensions: [ '.ts', '.js', '.json' ]
-  //     }),
-  //     typescript()
-  //   ]
-  // },
-  // esm: {
-  //   input: resolve("src/index.ts"),
-  //   file: resolve("dist/vuex.esm.js"),
-  //   format: "es",
-  //   plugins: [
-  //     nodeResolve({
-  //       jsnext: true,
-  //       extensions: [ '.ts', '.js', '.json' ]
-  //     }),
-  //     typescript()
-  //   ]
-  // },
-  // "esm-browser-dev": {
-  //   input: resolve("src/index.ts"),
-  //   file: resolve("dist/vuex.esm.browser.js"),
-  //   format: "es",
-  //   env: "development",
-  //   transpile: false,
-  //   plugins: [
-  //     nodeResolve({
-  //       jsnext: true,
-  //       extensions: [ '.ts', '.js', '.json' ]
-  //     }),
-  //     typescript()
-  //   ]
-  // },
-  // "esm-browser-prod": {
-  //   input: resolve("src/index.ts"),
-  //   file: resolve("dist/vuex.esm.browser.min.js"),
-  //   format: "es",
-  //   env: "production",
-  //   transpile: false,
-  //   plugins: [
-  //     nodeResolve({
-  //       jsnext: true,
-  //       extensions: [ '.ts', '.js', '.json' ]
-  //     }),
-  //     typescript()
-  //   ]
-  // }
+  umdProd: {
+    input: resolve("src/index.ts"),
+    file: resolve("dist/index.umd.min.js"),
+    format: "umd",
+    env: "production",
+  },
+  commonjs: {
+    input: resolve("src/index.ts"),
+    file: resolve("dist/index.common.js"),
+    format: "cjs",
+  },
+  esm: {
+    input: resolve("src/index.ts"),
+    file: resolve("dist/index.esm.js"),
+    format: "es",
+  },
+  "esm-browser-dev": {
+    input: resolve("src/index.ts"),
+    file: resolve("dist/index.esm.browser.js"),
+    format: "es",
+    env: "development",
+    transpile: false,
+  },
+  "esm-browser-prod": {
+    input: resolve("src/index.ts"),
+    file: resolve("dist/index.esm.browser.min.js"),
+    format: "es",
+    env: "production",
+    transpile: false,
+  }
 };
 
 function genConfig(opts) {
@@ -99,18 +64,29 @@ function genConfig(opts) {
   };
   const config = {
     input: {
+      external: ['vue', 'vue-router'],
       input: opts.input,
       globals: {
         vue: 'Vue',
         'vue-router': 'VueRouter',
       },
+      treeshake: true,
       plugins: [
-        includePaths(includePathOptions),
+        //includePaths(includePathOptions),
         nodeResolve({
           extensions: ['.ts', '.js', '.json'],
         }),
-        typescript(),
-        commonjs(),
+        typescript({
+          tsconfig: __dirname + '/../tsconfig.json',
+          typescript: require('typescript'),
+          useTsconfigDeclarationDir: true,
+          tsconfigOverride: {
+            compilerOptions : {
+              module: "es2015"
+            }
+          }
+        }),
+        commonjs({extensions: ['.js', '.ts']}),
         replace({
           __VERSION__: version,
         }),
@@ -120,7 +96,8 @@ function genConfig(opts) {
       banner,
       file: opts.file,
       format: opts.format,
-      name: 'vue.access.control',
+      name: 'VueAccessControl',
+      sourcemap: true
     },
   };
 
@@ -135,7 +112,6 @@ function genConfig(opts) {
   if (opts.transpile !== false) {
     config.input.plugins.push(buble());
   }
-
   return config;
 }
 
@@ -146,5 +122,5 @@ function mapValues(obj, fn) {
   });
   return res;
 }
-console.log(mapValues(configs, genConfig));
+
 module.exports = mapValues(configs, genConfig);

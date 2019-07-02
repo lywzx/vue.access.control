@@ -29,13 +29,12 @@ function build(builds) {
 }
 
 function buildEntry({ input, output }) {
-  console.log(input, output);
   const { file, banner } = output;
   const isProd = /min\.js$/.test(file);
   return rollup
     .rollup(input)
-    .then(bundle => bundle.generate(output))
-    .then(({ output: [{ code }] }) => {
+    .then(bundle => bundle.write(output))
+    /*.then(({ output: [{ code, map }] }) => {
       if (isProd) {
         const minified =
           (banner ? banner + '\n' : '') +
@@ -48,11 +47,11 @@ function buildEntry({ input, output }) {
               pure_funcs: ['makeMap'],
             },
           }).code;
-        return write(file, minified, true);
+        return Promise.all([write(file, minified, true), write(file + '.map', JSON.stringify(map))]);
       } else {
-        return write(file, code);
+        return Promise.all([write(file, code), write(file + '.map', JSON.stringify(map))]);
       }
-    });
+    })*/;
 }
 
 function write(dest, code, zip) {
