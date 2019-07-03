@@ -69,7 +69,6 @@
     "rollup-plugin-includepaths": "^0.2.3",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-replace": "^2.2.0",
-    "rollup-plugin-typescript": "^1.0.1",
     "rollup-plugin-typescript2": "^0.21.2",
     "terser": "^4.0.0",
     "ts-loader": "^6.0.0",
@@ -80,7 +79,6 @@
     "vue-property-decorator": "^8.1.1",
     "vue-router": "^3.0.6",
     "vue-template-compiler": "^2.6.10",
-    "vuepress": "^1.0.1",
     "webpack": "^4.31.0",
     "webpack-dev-middleware": "^3.6.2",
     "webpack-hot-middleware": "^2.24.4"

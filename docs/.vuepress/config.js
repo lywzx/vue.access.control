@@ -1,4 +1,5 @@
 module.exports = {
+  base: '/docs/vue.access.control/',
   locales: {
     // 键名是该语言所属的子路径
     // 作为特例，默认语言可以使用 '/' 作为其路径。
@@ -9,7 +10,7 @@ module.exports = {
     },
     '/zh/': {
       lang: 'zh-CN', // 将会被设置为 <html> 的 lang 属性
-      title: 'access.control',
+      title: 'Vue权限管理组件',
       description: 'access.control是一套基于RBAC(Role based Access Control)的权限管理的库，基于Typescript编辑，适合于浏览器及NodeJs端的权限认证。'
     },
   },
@@ -27,7 +28,7 @@ module.exports = {
         },
         algolia: {},
         nav: [
-          { text: 'GitHub', link: 'https://github.com/lywzx/access.control' }
+          { text: 'GitHub', link: 'https://github.com/lywzx/vue.access.control' }
         ],
         sidebar: {
           '/': [/* ... */],
@@ -51,12 +52,13 @@ module.exports = {
         // 当前 locale 的 algolia docsearch 选项
         algolia: {},
         nav: [
-          { text: 'GitHub', link: 'https://github.com/lywzx/access.control' }
+          { text: 'GitHub', link: 'https://github.com/lywzx/vue.access.control' }
         ],
-        sidebar: {
-          '/zh/': [/* ... */],
-          '/zh/nested/': ['/page-b', 'GitHub']
-        }
+        sidebar: [
+          '/zh/',
+          '/zh/getting-started',
+          '/zh/router'
+        ]
       }
     }
   }
