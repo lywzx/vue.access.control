@@ -40,7 +40,7 @@ after you correct install. you should new a AccessControl.
     import Vue from 'vue';
     
     Vue.use(VueAccessControl);
-    const access = new VueAccessControl();
+    const access = new VueAccessControl.Access();
     
     export default access;
 

@@ -11,5 +11,6 @@ node_modules/
 .eslintrc.js
 .gitignore
 .prettierrc.js
+.rpt2_cache/
 tsconfig.json
 build/

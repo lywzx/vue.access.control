@@ -4,6 +4,7 @@
     "module": "commonjs",
     "declaration": true,
     "outDir": "./dist",
+    "declarationDir": "./dist/typings",
     "strict": true,
     "sourceMap": true,
     "types" : ["node"],

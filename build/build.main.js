@@ -33,8 +33,16 @@ function buildEntry({ input, output }) {
   const isProd = /min\.js$/.test(file);
   return rollup
     .rollup(input)
-    .then(bundle => bundle.write(output))
-    /*.then(({ output: [{ code, map }] }) => {
+    .then((bundle) =>{
+      if (/index\.common\.js$/.test(file)) {
+        return bundle.write(output).then(() => {
+          return bundle.generate(output);
+        })
+      }
+      return bundle.generate(output)
+    })
+    .then((arg) => {
+      const { output: [{ code, map }] } = arg;
       if (isProd) {
         const minified =
           (banner ? banner + '\n' : '') +
@@ -51,7 +59,7 @@ function buildEntry({ input, output }) {
       } else {
         return Promise.all([write(file, code), write(file + '.map', JSON.stringify(map))]);
       }
-    })*/;
+    });
 }
 
 function write(dest, code, zip) {
