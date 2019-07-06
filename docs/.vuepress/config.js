@@ -57,7 +57,8 @@ module.exports = {
         sidebar: [
           '/zh/',
           '/zh/getting-started',
-          '/zh/router'
+          '/zh/router',
+          '/zh/components'
         ]
       }
     }
