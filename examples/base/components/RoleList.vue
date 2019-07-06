@@ -1,35 +1,33 @@
 <template>
-  <section>
-    <row type="flex" justify="center" align="middle">
-      <Col  class="role-title">
-        <p>请选择对应的角色</p>
-      </Col>
-      <Col class="role-list">
-        <checkbox-group v-model="selected">
-          <row :gutter="16" type="flex" justify="center">
-            <Col v-for="(role, index) in roles" :key="index" >
-              <div class="role-item" :class="{
-                selected: selected.indexOf(role.role) !== -1
-              }">
-                <a-button icon="edit" class="role-edit-button" size="small" ></a-button>
-                <checkbox :value="role.role">
-                  <p class="role-name">{{role.roleName}}</p>
-                  <p class="role-description">{{role.roleDescription}}</p>
-                </checkbox>
-              </div>
-            </Col>
-          </row>
-        </checkbox-group>
-      </Col>
-    </row>
-  </section>
+  <row class="mb20" type="flex" justify="start" align="middle">
+    <Col  class="role-title">
+      <p>请选择对应的角色</p>
+    </Col>
+    <Col class="role-list">
+      <checkbox-group v-model="selected">
+        <row :gutter="16" type="flex" justify="center">
+          <Col v-for="(role, index) in roles" :key="index" >
+            <div class="role-item" :class="{
+              selected: selected.indexOf(role.role) !== -1
+            }">
+              <a-button icon="edit" class="role-edit-button" size="small" ></a-button>
+              <checkbox :value="role.role">
+                <p class="role-name">{{role.roleName}}</p>
+                <p class="role-description">{{role.roleDescription}}</p>
+              </checkbox>
+            </div>
+          </Col>
+        </row>
+      </checkbox-group>
+    </Col>
+  </row>
 </template>
 <script type="text/ecmascript-6">
   import {
     Row,
     Col,
     Checkbox,
-    Button as AButton
+    Button as AButton,
   } from 'ant-design-vue';
   import {
     Roles
@@ -47,7 +45,7 @@
       return {
         selected: [
           'Guest'
-        ]
+        ],
       }
     },
     computed: {

@@ -457,7 +457,7 @@ export const install = function(_Vue: typeof VueConstructor, Options?: AccessOpt
     AccessRoleMiddleware.permissionDenyRedirectRoute = Access.defaultOptions.permissionDenyRedirectRoute;
   }
   ApplyMixin(Vue);
-  if (Options && Options.vueRouter) {
-    installFn(Vue);
-  }
+  //if (Options && Options.vueRouter) {
+  installFn(Vue, Access.defaultOptions.vueRouter);
+  //}
 };

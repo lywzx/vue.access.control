@@ -1,11 +1,6 @@
 <template>
   <div>
-    <div v-for="(permission, roleName) in permissions" :key="roleName" v-if="$access.hasRole(roleName)">
-      <divider orientation="left">{{roles[roleName].roleName}}</divider>
-      <div class="permission-list">
-        <a-button class="permission-item" type="primary" v-for="(per, index) in permission" :key="index" :disabled="!$access.hasRole(roleName)" :title="per.permission">{{per.permissionName}}</a-button>
-      </div>
-    </div>
+      <component v-for="(permission, roleName) in permissions" :is="renderComponent" :key="roleName" :roles="roles" :role-name="roleName" :permission="permission"></component>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -13,18 +8,26 @@
     Permissions,
     Roles
   } from '../data/RoleAndPermission';
-  import {
-    Divider,
-    Button as AButton
-  } from 'ant-design-vue';
+
   import {
     keyBy
   } from 'lodash';
+  import ActionsWithVIf from './Actions/ActionsWithVIf';
+  import ActionsWithVShow from './Actions/ActionsWithVShow';
+  import ActionsWithVAccessShow from './Actions/ActionsWithVAccessShow'
 
   export default {
+    props: {
+      renderType: {
+        required: true,
+        type:  Number,
+        default: 1
+      }
+    },
     components: {
-      Divider,
-      AButton
+      ActionsWithVIf,
+      ActionsWithVShow,
+      ActionsWithVAccessShow
     },
     computed: {
       roles() {
@@ -32,6 +35,14 @@
       },
       permissions() {
         return Object.freeze(Permissions);
+      },
+      renderComponent() {
+        return this.$options.components[[
+          undefined,
+          'ActionsWithVIf',
+          'ActionsWithVShow',
+          'ActionsWithVAccessShow'
+        ][this.renderType]]
       }
     }
   }

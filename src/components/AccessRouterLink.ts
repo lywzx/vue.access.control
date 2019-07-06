@@ -2,6 +2,7 @@ import { CreateElement, VNode } from 'vue/types/index';
 
 const AccessRouterLink = {
   name: 'AccessRouterLink',
+  extends: 'router-link',
   data() {
     return {
       hasPermission: true,
