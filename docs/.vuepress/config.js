@@ -1,5 +1,5 @@
 module.exports = {
-  head: [ ['script', {}, `
+  head: [ process.env.NODE_ENV === 'production' ? ['script', {}, `
       var _hmt = _hmt || [];
       (function() {
         var hm = document.createElement("script");
@@ -7,7 +7,7 @@ module.exports = {
         var s = document.getElementsByTagName("script")[0]; 
         s.parentNode.insertBefore(hm, s);
       })();
-  `]],
+  `] : []],
   base: '/docs/vue.access.control/',
   locales: {
     // 键名是该语言所属的子路径

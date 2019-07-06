@@ -104,3 +104,13 @@ export default {
   </div>
 </template>
 ```
+
+### 当`v-access-show`遇上了`router-link`
+
+当`v-access-show`应用在`router-link`时，在未使用表达式及值的情况下，`v-access-show`将表现出类`access-router-link`的功能。它会自动执行路由中间件，来判断当前用户是否有权限，然后再控制相关节点的显隐。与组件不同的是，节点仍然会创建，只不会`display:none`而已。
+
+```vue
+<template>
+    <router-link :to="{name: 'administrator_manage'}" v-access-show></router-link>
+</template>
+```
