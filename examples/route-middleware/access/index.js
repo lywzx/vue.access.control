@@ -1,11 +1,16 @@
-import VueAccessControl from "vue.access.control";
-import Vue from "vue";
-import { AsyncStudentRoute, AsyncTeacherRoute } from "../router/routes";
+import VueAccessControl, { LoginMiddleware } from 'vue.access.control';
+import Vue from 'vue';
+import { AsyncStudentRoute, AsyncTeacherRoute } from '../router/routes';
 
 Vue.use(VueAccessControl, {
-  vueRouter: true
+  vueRouter: true,
+  globalMiddleWares: ['login?'],
 });
 
+LoginMiddleware.handleExtend = function(next, ...args) {
+  next(true);
+};
+
 export default new VueAccessControl.Access({
-  routes: AsyncTeacherRoute.concat(AsyncStudentRoute)
+  routes: AsyncTeacherRoute.concat(AsyncStudentRoute),
 });

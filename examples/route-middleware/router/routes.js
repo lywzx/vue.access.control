@@ -4,6 +4,9 @@ import AddOrEditPost from '../views/Post/AddOrEdit';
 import Detail from '../views/Post/Detail';
 import Login from '../views/User/Login';
 import Admin from '../views/Admin/Index';
+import UserList from '../views/Admin/User/List';
+import RoleList from '../views/Admin/Role/List';
+import PermissionList from '../views/Admin/Permission/List';
 
 export default [
   {
@@ -14,7 +17,7 @@ export default [
     path: '/home',
     component: Home,
     meta: {
-      middleware: ['login?'],
+      middleware: [],
     },
   },
   {
@@ -41,6 +44,24 @@ export default [
   {
     path: '/detail/:post_id(\\d+)?',
     component: Detail,
+  },
+  {
+    path: '/admin',
+    component: Admin,
+    children: [
+      {
+        path: 'user',
+        component: UserList,
+      },
+      {
+        path: 'role',
+        component: RoleList,
+      },
+      {
+        path: 'permission',
+        component: PermissionList,
+      },
+    ],
   },
 ];
 

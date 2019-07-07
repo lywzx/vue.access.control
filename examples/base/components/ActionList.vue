@@ -14,7 +14,8 @@
   } from 'lodash';
   import ActionsWithVIf from './Actions/ActionsWithVIf';
   import ActionsWithVShow from './Actions/ActionsWithVShow';
-  import ActionsWithVAccessShow from './Actions/ActionsWithVAccessShow'
+  import ActionsWithVAccessShow from './Actions/ActionsWithVAccessShow';
+  import ActionsWithDisable from './Actions/ActionsWithDisable';
 
   export default {
     props: {
@@ -27,7 +28,8 @@
     components: {
       ActionsWithVIf,
       ActionsWithVShow,
-      ActionsWithVAccessShow
+      ActionsWithVAccessShow,
+      ActionsWithDisable
     },
     computed: {
       roles() {
@@ -41,7 +43,8 @@
           undefined,
           'ActionsWithVIf',
           'ActionsWithVShow',
-          'ActionsWithVAccessShow'
+          'ActionsWithVAccessShow',
+          'ActionsWithDisable'
         ][this.renderType]]
       }
     }
