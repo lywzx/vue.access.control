@@ -5,42 +5,47 @@
       v-model="collapsed"
     >
       <div class="logo" />
-      <a-menu theme="dark" :defaultSelectedKeys="['1']" mode="inline">
-        <a-menu-item key="1">
-          <a-icon type="pie-chart" />
-          <span>Option 1</span>
-        </a-menu-item>
-        <a-menu-item key="2">
-          <a-icon type="desktop" />
-          <span>Option 2</span>
-        </a-menu-item>
-        <a-sub-menu
-          key="sub1"
-        >
-          <span slot="title"><a-icon type="user" /><span>User</span></span>
-          <a-menu-item key="3">Tom</a-menu-item>
-          <a-menu-item key="4">Bill</a-menu-item>
-          <a-menu-item key="5">Alex</a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu
-          key="sub2"
-        >
-          <span slot="title"><a-icon type="team" /><span>Team</span></span>
-          <a-menu-item key="6">Team 1</a-menu-item>
-          <a-menu-item key="8">Team 2</a-menu-item>
-        </a-sub-menu>
-        <a-menu-item key="9">
-          <a-icon type="file" />
-          <span>File</span>
-        </a-menu-item>
+      <a-menu theme="dark" :defaultSelectedKeys="defaultSelectedKeys" :openKeys.sync="openKeys" mode="inline">
+        <template v-for="(item, index) in pageMenuItem">
+          <!-- start: no sub menu  -->
+          <a-menu-item :key="`${index}`" v-if="item.children && !item.children.length">
+            <router-link :to="{ name: item.name }">
+              <a-icon :type="item.meta.type" v-if="item.meta.type" />
+              <span>{{item.meta.title}}</span>
+            </router-link>
+          </a-menu-item>
+          <!-- end: no sub menu -->
+          <a-sub-menu :key="`${index}`" v-else>
+            <span slot="title">
+              <a-icon type="user" />
+              <span>{{item.meta.title}}</span>
+            </span>
+            <a-menu-item v-for="(route, idx) in item.children" :key="`${index}-${idx}`">
+              <router-link :to="{ name: route.name }">{{route.meta.title}}</router-link>
+            </a-menu-item>
+          </a-sub-menu>
+        </template>
       </a-menu>
     </a-layout-sider>
     <a-layout>
-      <a-layout-header style="background: #fff; padding: 0" />
+      <a-layout-header style="background: #fff; padding: 0" >
+        <a-menu
+          mode="horizontal"
+          :defaultSelectedKeys="['2']"
+          :style="{ lineHeight: '64px' }"
+        >
+          <a-menu-item key="1">nav 1</a-menu-item>
+          <a-menu-item key="2">nav 2</a-menu-item>
+          <a-menu-item key="3">nav 3</a-menu-item>
+        </a-menu>
+      </a-layout-header>
       <a-layout-content style="margin: 0 16px">
         <a-breadcrumb style="margin: 16px 0">
-          <a-breadcrumb-item>User</a-breadcrumb-item>
-          <a-breadcrumb-item>Bill</a-breadcrumb-item>
+          <template v-for="(item, index) in currentRouteMenu" >
+            <a-breadcrumb-item v-if="item.meta.title" :key="index">
+              <router-link :to="{ name: item.name }">{{item.meta.title}}</router-link>
+            </a-breadcrumb-item>
+          </template>
         </a-breadcrumb>
         <router-view></router-view>
         <!--<div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
@@ -60,7 +65,11 @@
     Breadcrumb as ABreadcrumb,
     Icon as AIcon
   } from 'ant-design-vue';
-
+  import {
+    find,
+    findIndex,
+    uniq
+  } from 'lodash';
 
   export default {
     components: {
@@ -79,8 +88,35 @@
     data () {
       return {
         collapsed: false,
+        userAddOpenKeys: []
       }
     },
+    computed: {
+      pageMenuItem() {
+        const admin = find(this.$router.options.routes, {path: '/admin'});
+        return admin.children;
+      },
+      currentRouteMenu() {
+        return this.$router.currentRoute.matched;
+      },
+      defaultSelectedKeys() {
+        const openKeys = this.openKeys[0];
+        const adminMenu = this.pageMenuItem[openKeys];
+        const selectIndex = findIndex(adminMenu.children, {name: this.$route.name});
+        return [ `${openKeys}-${selectIndex === -1 ? 0 : selectIndex}`];
+      },
+      openKeys:{
+        get() {
+          const currentRoute = this.currentRouteMenu[1];
+          return uniq([
+            `${findIndex(this.pageMenuItem, { name: currentRoute.name })}`
+          ].concat(this.userAddOpenKeys));
+        },
+        set(value) {
+          this.userAddOpenKeys = value;
+        }
+      }
+    }
   }
 </script>
 

@@ -9,6 +9,7 @@
   import {
     Card as ACard
   } from 'ant-design-vue';
+
   export default {
     components: {
       ACard
