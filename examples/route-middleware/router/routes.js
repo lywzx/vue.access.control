@@ -10,6 +10,8 @@ import UserList from '../views/Admin/User/List';
 import RoleList from '../views/Admin/Role/List';
 import PermissionList from '../views/Admin/Permission/List';
 import PermissionCreate from '../views/Admin/Permission/Create';
+import AccessRouterLinkDemo from '../views/Admin/Access/AccessRouterLinkDemo';
+import VAccessShowDemo from '../views/Admin/Access/VAccessShowDemo';
 
 export default [
   {
@@ -150,9 +152,19 @@ export default [
             path: 'first',
             name: 'admin_access_demo1',
             meta: {
-              title: 'access demo1',
+              title: 'AccessRouterLink Demo',
               type: '',
             },
+            component: AccessRouterLinkDemo,
+          },
+          {
+            path: 'second',
+            name: 'admin_access_demo2',
+            meta: {
+              title: 'VAccessShow Demo',
+              type: '',
+            },
+            component: VAccessShowDemo,
           },
         ],
       },
