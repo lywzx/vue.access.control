@@ -14,13 +14,13 @@ module.exports = {
     // 作为特例，默认语言可以使用 '/' 作为其路径。
     '/': {
       lang: 'en-US',
-      title: 'vue access control',
-      description: ''
+      title: 'vue access control alias VueAccessControl',
+      description: '@lywzx/vue.access.control'
     },
     '/zh/': {
       lang: 'zh-CN', // 将会被设置为 <html> 的 lang 属性
-      title: 'Vue权限管理组件',
-      description: 'access.control是一套基于RBAC(Role based Access Control)的权限管理的库，基于Typescript编辑，适合于浏览器及NodeJs端的权限认证。'
+      title: 'Vue权限管理组件(VueAccessControl)',
+      description: '@lywzx/vue.access.control是一套基于RBAC(Role based Access Control)的权限管理的库，基于Typescript编辑，适合于浏览器及NodeJs端的权限认证。'
     },
   },
   themeConfig: {

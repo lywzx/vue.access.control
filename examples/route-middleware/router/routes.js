@@ -18,14 +18,14 @@ export default [
     path: '/login',
     component: Login,
     meta: {
-      middleware: ['login', 'role:admin'],
+      middleware: ['login?'],
     },
   },
   {
     path: '/admin',
     component: Admin,
     meta: {
-      middleware: [],
+      middleware: ['login'],
     },
     children: [
       // user manage

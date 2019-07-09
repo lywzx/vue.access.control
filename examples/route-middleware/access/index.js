@@ -1,6 +1,7 @@
 import VueAccessControl, { LoginMiddleware } from 'vue.access.control';
 import Vue from 'vue';
 import { AsyncStudentRoute, AsyncTeacherRoute } from '../router/routes';
+import { User } from '../service/User';
 
 Vue.use(VueAccessControl, {
   vueRouter: true,
@@ -8,9 +9,24 @@ Vue.use(VueAccessControl, {
 });
 
 LoginMiddleware.handleExtend = function(next, ...args) {
-  next(true);
+  const token = localStorage.getItem('token');
+  if (token) {
+    User.freshUserInfo(token)
+      .then(() => {
+        next(true);
+      })
+      .catch(() => {
+        next(false);
+      });
+  } else {
+    next(false);
+  }
 };
 
-export default new VueAccessControl.Access({
+const Access = new VueAccessControl.Access({
   routes: AsyncTeacherRoute.concat(AsyncStudentRoute),
 });
+
+User.access = Access;
+
+export default Access;
