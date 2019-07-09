@@ -1,7 +1,3 @@
-import Home from '../views/Home/Index';
-import User from '../views/User/Index';
-import AddOrEditPost from '../views/Post/AddOrEdit';
-import Detail from '../views/Post/Detail';
 import Login from '../views/User/Login';
 import Admin from '../views/Admin/Index';
 import Layout from '../views/Admin/Layout';
@@ -16,21 +12,7 @@ import VAccessShowDemo from '../views/Admin/Access/VAccessShowDemo';
 export default [
   {
     path: '',
-    redirect: '/home',
-  },
-  {
-    path: '/home',
-    component: Home,
-    meta: {
-      middleware: [],
-    },
-  },
-  {
-    path: '/user',
-    component: User,
-    meta: {
-      middleware: ['login', 'role:admin'],
-    },
+    redirect: '/login',
   },
   {
     path: '/login',
@@ -38,17 +20,6 @@ export default [
     meta: {
       middleware: ['login', 'role:admin'],
     },
-  },
-  {
-    path: '/post',
-    component: AddOrEditPost,
-    meta: {
-      middleware: ['login', 'role:admin'],
-    },
-  },
-  {
-    path: '/detail/:post_id(\\d+)?',
-    component: Detail,
   },
   {
     path: '/admin',
