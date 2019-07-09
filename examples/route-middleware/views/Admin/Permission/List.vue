@@ -1,5 +1,5 @@
 <template>
-  <a-card title="Permission Manage" :bordered="false" >
+  <a-card title="Permission List Manage" :bordered="false" >
     <p>Card content</p>
     <p>Card content</p>
     <p>Card content</p>

@@ -93,6 +93,7 @@ export class Access {
         ],
         permissions: [],
         userId: undefined,
+        isLogin: undefined,
       },
       extendData: {},
     }) as AccessVmData;

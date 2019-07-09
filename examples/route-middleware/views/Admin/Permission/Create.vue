@@ -1,6 +1,17 @@
 <template>
-  <div>123456</div>
+  <a-card title="Permission Create" :bordered="false" >
+    <p>Card content</p>
+    <p>Card content</p>
+    <p>Card content</p>
+  </a-card>
 </template>
 <script>
-  export default {}
+  import {
+    Card as ACard
+  } from 'ant-design-vue';
+  export default {
+    components: {
+      ACard
+    }
+  }
 </script>

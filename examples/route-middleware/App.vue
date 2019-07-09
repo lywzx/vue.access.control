@@ -13,6 +13,13 @@
     }
   }
 </script>
-<style>
+<style lang="less">
+  // flex相关
+  .flex-auto {
+    display: flex;
 
+    > *:not(.flex-fixed) {
+      flex: 1;
+    }
+  }
 </style>

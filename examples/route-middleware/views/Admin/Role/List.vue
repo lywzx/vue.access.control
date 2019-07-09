@@ -1,5 +1,5 @@
 <template>
-  <a-card title="Role Manage" :bordered="false" >
+  <a-card title="Role List Manage" :bordered="false" >
     <p>Card content</p>
     <p>Card content</p>
     <p>Card content</p>

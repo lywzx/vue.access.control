@@ -28,16 +28,21 @@
       </a-menu>
     </a-layout-sider>
     <a-layout>
-      <a-layout-header style="background: #fff; padding: 0" >
-        <a-menu
-          mode="horizontal"
-          :defaultSelectedKeys="['2']"
-          :style="{ lineHeight: '64px' }"
-        >
-          <a-menu-item key="1">nav 1</a-menu-item>
-          <a-menu-item key="2">nav 2</a-menu-item>
-          <a-menu-item key="3">nav 3</a-menu-item>
-        </a-menu>
+      <a-layout-header style="background: #fff; padding: 0"  class="flex-auto">
+        <div>
+          <a-menu
+            mode="horizontal"
+            :defaultSelectedKeys="['2']"
+            :style="{ lineHeight: '64px' }"
+          >
+            <a-menu-item key="1">nav 1</a-menu-item>
+            <a-menu-item key="2">nav 2</a-menu-item>
+            <a-menu-item key="3">nav 3</a-menu-item>
+          </a-menu>
+        </div>
+        <div class="flex-fixed" style="width: 140px;">
+          <header-avatar></header-avatar>
+        </div>
       </a-layout-header>
       <a-layout-content style="margin: 0 16px">
         <a-breadcrumb style="margin: 16px 0">
@@ -63,13 +68,16 @@
     Layout as ALayout,
     Menu as AMenu,
     Breadcrumb as ABreadcrumb,
-    Icon as AIcon
+    Icon as AIcon,
+    Row as ARow,
+    Col as ACol,
   } from 'ant-design-vue';
   import {
     find,
     findIndex,
     uniq
   } from 'lodash';
+  import HeaderAvatar from './HeaderAvatar';
 
   export default {
     components: {
@@ -83,7 +91,10 @@
       ALayoutHeader: ALayout.Header,
       ALayoutContent: ALayout.Content,
       ALayoutSider: ALayout.Sider,
-      ALayoutFooter: ALayout.Footer
+      ALayoutFooter: ALayout.Footer,
+      ARow,
+      ACol,
+      HeaderAvatar
     },
     data () {
       return {
@@ -97,7 +108,7 @@
         return admin.children;
       },
       currentRouteMenu() {
-        return this.$router.currentRoute.matched;
+        return this.$route.matched;
       },
       defaultSelectedKeys() {
         const openKeys = this.openKeys[0];
