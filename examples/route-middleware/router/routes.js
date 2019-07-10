@@ -1,13 +1,10 @@
 import Login from '../views/User/Login';
 import Admin from '../views/Admin/Index';
 import Layout from '../views/Admin/Layout';
-import UserCreate from '../views/Admin/User/Create';
-import UserList from '../views/Admin/User/List';
-import RoleList from '../views/Admin/Role/List';
-import PermissionList from '../views/Admin/Permission/List';
-import PermissionCreate from '../views/Admin/Permission/Create';
 import AccessRouterLinkDemo from '../views/Admin/Access/AccessRouterLinkDemo';
 import VAccessShowDemo from '../views/Admin/Access/VAccessShowDemo';
+import SystemSettings from '../views/Admin/System/Settings';
+import PagePlaceholder from '../views/Admin/Layout/PagePlaceholder';
 
 export default [
   {
@@ -35,22 +32,24 @@ export default [
         meta: {
           type: 'pie-chart',
           title: 'User Manage',
+          middleware: ['role:administrator|common_administrator'],
         },
         component: Layout,
         children: [
           {
             name: 'admin_user_create',
             path: 'create',
-            component: UserCreate,
+            component: PagePlaceholder,
             meta: {
               type: 'bbb',
               title: 'User Create',
+              middleware: ['role:administrator'],
             },
           },
           {
             name: 'admin_user_list',
             path: 'list',
-            component: UserList,
+            component: PagePlaceholder,
             meta: {
               type: 'aaa',
               title: 'User List',
@@ -71,7 +70,7 @@ export default [
           {
             name: 'admin_role_list',
             path: 'list',
-            component: RoleList,
+            component: PagePlaceholder,
             meta: {
               type: 'aaa',
               title: 'Role List',
@@ -92,7 +91,7 @@ export default [
           {
             name: 'admin_permission_list',
             path: 'list',
-            component: PermissionList,
+            component: PagePlaceholder,
             meta: {
               type: '',
               title: 'Permission List',
@@ -101,7 +100,7 @@ export default [
           {
             name: 'admin_permission_create',
             path: 'create',
-            component: PermissionCreate,
+            component: PagePlaceholder,
             meta: {
               type: '',
               title: 'Permission Create',
@@ -136,6 +135,63 @@ export default [
               type: '',
             },
             component: VAccessShowDemo,
+          },
+        ],
+      },
+      {
+        name: 'school_manage',
+        path: 'school',
+        meta: {
+          type: 'file',
+          title: 'School Manage',
+          middleware: ['role:school_administrator|school_teacher|school_student'],
+        },
+        component: Layout,
+        children: [
+          {
+            name: 'school_teacher_manage',
+            path: 'teacher',
+            meta: {
+              title: 'Teacher Manage',
+              middleware: ['role:school_administrator'],
+            },
+            component: PagePlaceholder,
+          },
+          {
+            name: 'school_student_manage',
+            path: 'student',
+            meta: {
+              title: 'Student Manage',
+              middleware: ['role:school_teacher'],
+            },
+            component: PagePlaceholder,
+          },
+          {
+            name: 'school_class_manage',
+            path: 'class',
+            meta: {
+              title: 'School School',
+            },
+            component: PagePlaceholder,
+          },
+        ],
+      },
+      {
+        name: 'admin_system',
+        path: 'system',
+        meta: {
+          type: '',
+          title: 'System manage',
+        },
+        component: Layout,
+        children: [
+          {
+            name: 'admin_system_settings',
+            path: 'settings',
+            meta: {
+              title: 'System Settings',
+            },
+            component: SystemSettings,
           },
         ],
       },

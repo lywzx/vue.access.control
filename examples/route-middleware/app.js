@@ -8,4 +8,9 @@ const app = new Vue({
   access,
   render: h => h(App),
   router,
+  computed: {
+    access() {
+      return this.$access;
+    },
+  },
 }).$mount('#app');

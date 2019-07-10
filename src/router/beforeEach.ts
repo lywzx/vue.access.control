@@ -4,6 +4,7 @@ import RouterMiddleware from './RouterMiddleware';
 import { assert } from '../util';
 import flatten from 'lodash/flatten';
 import map from 'lodash/map';
+import get from 'lodash/get';
 
 const beforeEach: NavigationGuard = function(this: VueRouter, to: Route, from: Route, next) {
   let app: any = this.app.$options;
@@ -15,14 +16,7 @@ const beforeEach: NavigationGuard = function(this: VueRouter, to: Route, from: R
   }
   let routerMiddleWare: RouterMiddleware = access.accessRouterMiddleware as RouterMiddleware;
   let matched: RouteRecord[] = to.matched;
-  let middleware: string[] = flatten(
-    map(matched, function(item: RouteRecord) {
-      if (item.meta && item.meta.middleware) {
-        return item.meta.middleware;
-      }
-      return [];
-    })
-  );
+  let middleware: string[] = flatten(map(matched, (item: RouteRecord) => get(item, 'meta.middleware', [])));
 
   routerMiddleWare.runMiddleware(
     {

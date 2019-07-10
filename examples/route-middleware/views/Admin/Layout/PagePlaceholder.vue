@@ -1,11 +1,9 @@
 <template>
-  <a-card title="Permission List Manage" :bordered="false" >
-    <p>Card content</p>
-    <p>Card content</p>
-    <p>Card content</p>
+  <a-card :title="$route.meta.title" :bordered="false" >
+    <p>This is a template page</p>
   </a-card>
 </template>
-<script>
+<script type="text/ecmascript-6">
   import {
     Card as ACard
   } from 'ant-design-vue';
@@ -15,6 +13,4 @@
     }
   }
 </script>
-<style>
-
-</style>
+<style lang="less"></style>

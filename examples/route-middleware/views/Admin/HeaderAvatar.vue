@@ -116,6 +116,9 @@
             name: text
           }
         });
+        this.$nextTick(() => {
+          this.$access.$emit('system:role:change');
+        });
       },
       logout() {
         this.$access.reset();

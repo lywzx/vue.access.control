@@ -1,4 +1,5 @@
 import { CreateElement, VNode } from 'vue/types/index';
+import { RawLocation } from 'vue-router';
 
 const AccessRouterLink = {
   name: 'AccessRouterLink',
@@ -36,24 +37,13 @@ const AccessRouterLink = {
       // @ts-ignore
       const router = this.$router;
       // @ts-ignore
-      const current = this.$route;
-      // @ts-ignore
-      const { route } = router.resolve(this.to, current, this.append);
-      // @ts-ignore
       let access = this.$access;
-      let routerMiddleWares = access.accessRouterMiddleware;
-      routerMiddleWares.runMiddleware(
-        {
-          middleware: route.meta.middleware || [],
-          next: (result: boolean | void) => {
-            // @ts-ignore
-            this.hasPermission = result === undefined;
-          },
-          terminal: true,
-        },
-        router,
-        route
-      );
+
+      access
+        // @ts-ignore
+        .isCanTo(router, this.to as RawLocation, this.$route, this.append as boolean)
+        // @ts-ignore
+        .then((result: boolean) => (this.hasPermission = result));
     },
   },
   mounted() {

@@ -4,6 +4,8 @@ import { assert } from './util';
 import extend from 'lodash/extend';
 import pick from 'lodash/pick';
 import get from 'lodash/get';
+import map from 'lodash/map';
+import flatten from 'lodash/flatten';
 import AccessOptions from './types/AccessOptions';
 import ApplyMixin from './mixin';
 import { User } from '@lywzx/access.control';
@@ -22,7 +24,7 @@ import AccessVmData from './types/AccessVmData';
 import AccessUserOptions from './types/AccessUserOptions';
 import LoginMiddleware from './router/middle/LoginMiddleware';
 import AccessRoleMiddleware from './router/middle/AccessRoleMiddleware';
-
+import { RawLocation, Route, VueRouter } from 'vue-router/types/router';
 
 let Vue: typeof VueConstructor;
 
@@ -212,6 +214,37 @@ export class Access {
    */
   public isAbleTo(permission: StringOrStringArray, requiredAll: boolean = false): boolean {
     return this.can(permission, requiredAll);
+  }
+
+  /**
+   * has permission visit the page
+   * @param router
+   * @param to
+   * @param current
+   * @param append
+   */
+  public isCanTo(router: VueRouter, to: RawLocation, current?: Route, append: boolean = false): Promise<boolean> {
+    const resolvedRoute = router.resolve(to, current, append);
+    const matched = resolvedRoute.route.matched;
+    const middleware = flatten(map(matched, it => get(it, 'meta.middleware', [])));
+    const accessRouterMiddleware = this.accessRouterMiddleware;
+
+    assert(!!accessRouterMiddleware, 'the method isCanTo can be called when useRouter is true');
+
+    return new Promise((resolve, reject) => {
+      (accessRouterMiddleware as RouterMiddleware).runMiddleware(
+        {
+          middleware: middleware,
+          next: (result: boolean | void) => {
+            resolve(result === undefined || result === true);
+          },
+          terminal: true,
+        },
+        router,
+        resolvedRoute.route,
+        current
+      );
+    });
   }
 
   /**

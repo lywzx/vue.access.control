@@ -15,7 +15,7 @@ module.exports = {
     '/': {
       lang: 'en-US',
       title: 'vue access control alias VueAccessControl',
-      description: '@lywzx/vue.access.control'
+      description: '@lywzx/vue.access.control vue access control'
     },
     '/zh/': {
       lang: 'zh-CN', // 将会被设置为 <html> 的 lang 属性
