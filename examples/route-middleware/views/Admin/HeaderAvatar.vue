@@ -28,6 +28,7 @@
     Menu as AMenu,
     Icon as AIcon
   } from 'ant-design-vue';
+  import { User } from '../../service/User';
 
   export default {
     name: 'HeaderAvatar',
@@ -121,7 +122,10 @@
         });
       },
       logout() {
-        this.$access.reset();
+        User.logout().then(() => {
+          this.$access.$emit('access:user:logout', true);
+          location.reload();
+        });
       }
     }
   }

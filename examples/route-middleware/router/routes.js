@@ -63,6 +63,7 @@ export default [
         meta: {
           type: 'desktop',
           title: 'Role Manage',
+          middleware: ['role:administrator|common_administrator'],
         },
         path: 'role',
         component: Layout,
@@ -84,6 +85,7 @@ export default [
         meta: {
           type: 'file',
           title: 'Permission Manage',
+          middleware: ['role:administrator'],
         },
         path: 'permission',
         component: Layout,
@@ -171,6 +173,7 @@ export default [
             path: 'class',
             meta: {
               title: 'School School',
+              middleware: ['role:school_teacher|school_student'],
             },
             component: PagePlaceholder,
           },

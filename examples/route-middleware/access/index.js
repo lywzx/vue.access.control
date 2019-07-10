@@ -6,6 +6,9 @@ import { User } from '../service/User';
 Vue.use(VueAccessControl, {
   vueRouter: true,
   globalMiddleWares: ['login?'],
+  loginRoute: {
+    name: 'user_login',
+  },
 });
 
 LoginMiddleware.handleExtend = function(next, ...args) {

@@ -16,6 +16,7 @@ export class User {
       setTimeout(() => {
         // access token
         localStorage.setItem('token', Date.now());
+        User.access.reset();
         resolve();
       }, 200);
     });
@@ -41,6 +42,16 @@ export class User {
         });
         resolve(userInfo);
       }, 100);
+    });
+  }
+
+  static logout() {
+    return new Promise(function(resolve) {
+      setTimeout(() => {
+        localStorage.removeItem('token');
+        User.access.reset();
+        resolve();
+      }, 1000);
     });
   }
 }
