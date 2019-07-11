@@ -1,111 +1,104 @@
 import { VNode } from 'vue/types/vnode';
 import { Vue } from 'vue-property-decorator';
 import isString from 'lodash/isString';
-import some from 'lodash/some';
-import extend from 'lodash/extend';
 import isArray from 'lodash/isArray';
-import keys from 'lodash/keys';
-
-import { Access } from '../Access';
-import { assert } from '../util';
+import isBoolean from 'lodash/isBoolean';
+import { assert, isPromiseLike } from '../util';
+import { stringToArrayArgs } from '../util';
+import { DirectiveBinding } from 'vue/types/options';
 
 const vShow = Vue.directive('show');
+const existsModifier = {
+  ability: 'ability',
+  role: 'hasRole',
+  can: 'can',
+  owns: 'owns',
+  login: 'isLogin',
+};
 
-function buildFn(fn: Function) {
-  let existsModifier = {
-    ability: 'ability',
-    role: 'hasRole',
-    can: 'can',
-    login: 'isLogin',
-  };
-  return function(this: any, $el: HTMLElement, binding: any, vNode: VNode, oldVNode: VNode) {
-    let componentInstance = vNode.componentInstance;
-    if (componentInstance) {
-      // @ts-ignore
-      let access = componentInstance.$access as Access;
-      let modifiers = binding.modifiers;
-      let modifierKeys = keys(modifiers);
-      if ('value' in binding || 'expression' in binding) {
-        if (some(modifierKeys, item => item in existsModifier)) {
-          let value = binding.value;
-          let args: any[] = [];
-          if (isArray(value)) {
-            args = value;
-          } else if (isString(value)) {
-            args = value.split(',').map(function(item) {
-              let itemTrim = item.trim();
-              let itemToLowercase = itemTrim.toLocaleString();
-              if (itemToLowercase === 'false' || itemToLowercase === 'true') {
-                return itemToLowercase === 'true';
-              }
-              return itemTrim;
-            });
-          } else {
-            assert(false, 'directive v-access-show value need a array or string');
-          }
-          // @ts-ignore
-          let result = (modifierKeys.all ? every : some)(modifierKeys, function(item: string) {
-            // @ts-ignore
-            return access[existsModifier[item]](args[0], args[1]);
-          });
-          return fn.call(
-            this,
-            $el,
-            extend({}, binding, {
-              value: result,
-            }),
-            vNode,
-            oldVNode
-          );
+function getResultValue($el: HTMLElement, binding: any, vNode: VNode, oldVNode: VNode): boolean | Promise<boolean> {
+  const context = vNode.context as Vue;
+  const access = context.$access;
+
+  if ('arg' in binding && binding.arg in existsModifier) {
+    let value = 'value' in binding ? binding.value : false;
+
+    assert(
+      isString(value) || isArray(value) || isBoolean(value),
+      `when v-access-show used arg equal ${binding.arg}, the value should be string or array or boolean`
+    );
+
+    if (isString(value)) {
+      value = stringToArrayArgs(value);
+    }
+
+    if (isBoolean(value)) {
+      if (binding.arg === 'login') {
+        const loginStatus = access.isLogin();
+        if (binding.value === true) {
+          return loginStatus === true;
         }
-      } else if (
-        vNode &&
-        vNode.componentOptions &&
-        vNode.componentOptions.tag &&
-        ['router-link', 'access-router-link'].indexOf(vNode.componentOptions.tag) !== -1
-      ) {
-        // @ts-ignore
-        const router = componentInstance.$router;
-        // @ts-ignore
-        const current = componentInstance.$route;
-        // @ts-ignore
-        const { route } = router.resolve(componentInstance.to, current, componentInstance.append);
-        // @ts-ignore
-        let routerMiddleWares = access.accessRouterMiddleware;
-
-        return (
-          routerMiddleWares &&
-          routerMiddleWares.runMiddleware(
-            {
-              middleware: route.meta.middleware || [],
-              next: (result: boolean | void) => {
-                // @ts-ignore
-                fn.call(
-                  this,
-                  $el,
-                  extend({}, binding, { value: result === undefined ? true : result }),
-                  vNode,
-                  oldVNode
-                );
-              },
-              terminal: true,
-            },
-            router,
-            route
-          )
-        );
+        return loginStatus === undefined || loginStatus;
+      } else {
+        return value;
       }
     }
 
-    fn.call(this, $el, binding, vNode, oldVNode);
-  };
+    return (access as any)[(existsModifier as any)[binding.arg]](...value);
+  }
+
+  if (
+    vNode.componentOptions &&
+    vNode.componentOptions.tag === 'router-link' &&
+    vNode.componentInstance &&
+    (vNode.componentInstance as any).to
+  ) {
+    return access.isCanTo(context.$router, (vNode.componentInstance as any).to);
+  }
+
+  return binding.value;
 }
 
 export default {
+  bind: function(this: any, $el: HTMLElement, binding: DirectiveBinding, vnode: VNode, oldVnode: VNode) {
+    const value = getResultValue($el, binding, vnode, oldVnode);
+    const fu = (result: boolean) => {
+      // @ts-ignore
+      binding.value = result;
+      (vShow.bind as Function).call(this, $el, binding, vnode, oldVnode);
+    };
+    if (isPromiseLike(value)) {
+      (value as Promise<boolean>).then(fu);
+    } else {
+      fu(value as boolean);
+    }
+  },
   // @ts-ignore
-  bind: buildFn(vShow.bind),
+  unbind: function(this: any, $el: HTMLElement, binding: DirectiveBinding, vnode: VNode, oldVnode: VNode) {
+    const value = getResultValue($el, binding, vnode, oldVnode);
+    const fu = (result: boolean) => {
+      // @ts-ignore
+      binding.value = result;
+      (vShow.bind as Function).call(this, $el, binding, vnode, oldVnode);
+    };
+    if (isPromiseLike(value)) {
+      (value as Promise<boolean>).then(fu);
+    } else {
+      fu(value as boolean);
+    }
+  },
   // @ts-ignore
-  unbind: buildFn(vShow.unbind),
-  // @ts-ignore
-  update: buildFn(vShow.update),
+  update: function(this: any, $el: HTMLElement, binding: DirectiveBinding, vnode: VNode, oldVnode: VNode) {
+    const value = getResultValue($el, binding, vnode, oldVnode);
+    const fu = (result: boolean) => {
+      // @ts-ignore
+      binding.value = result;
+      (vShow.bind as Function).call(this, $el, binding, vnode, oldVnode);
+    };
+    if (isPromiseLike(value)) {
+      (value as Promise<boolean>).then(fu);
+    } else {
+      fu(value as boolean);
+    }
+  }
 };

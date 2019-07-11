@@ -13,6 +13,7 @@
         "libraryDirectory": "",
         "camel2DashComponentName": false  // default: true
       }
-    ]]
+    ]],
+    "transform-class-properties"
   ]
 }

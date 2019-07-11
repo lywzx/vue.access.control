@@ -64,6 +64,31 @@ Router.afterEach(afterEach.bind(Router));
 特别注意，`beforeEach`及`afterEach`需要调用`bind(Router)`之后传入到事件钩子中。
 
 
+## 中间件语法
+
+`VueAccessControl`中内置了四个中间件，分别为：`login`、`role`、`can`、`ability`。
+
+中间件使用，例如格式如下：
+
+```
+name[?]:args,args....
+```
+
+* `name`： 中间件名称
+* `?`: 可选修饰符，具体以中间件是否支持为准，如：`login`中间件，可选时， 表示当前页面，可以登录也不不登录；其他系统中间件，不支持可选操作
+* args: 传给中间件的参数，多个参数以`，`隔开
+
+示例：
+
+
+```vue
+   middleware: ['login?']      // 可选登录
+   
+   middleware: ['login', 'role:administrator'] // 多个中间件
+   
+   middleware: ['login', 'role:administrator|teacher,true'] // 多个中间件，多个参数
+```
+
 ## `login`中间件
 
 `VueAccessControl`中`login`中间件，如果要正常使用的话，需要稍加配置才可以。
@@ -146,7 +171,7 @@ export class User {
               access.setLoginUserInfo({
                 roles: result.roles,
                 permissions: result.permissions,
-                // $access.own() 方法，会用到此字段
+                // $access.owns() 方法，会用到此字段
                 userId: result.id,
               });
               return result;
@@ -237,10 +262,7 @@ middleware: ['login', 'can:update_article|delete_article'],   // 有更新文章
 middleware: ['login', 'can:update_article|delete_article,true'], // 同时有更新及删除文章权限
 ```
     
-    
-
 有时，可能需要判断用户同时有某个角色或某些权限，组件`role`中件虽然可以实现，但是一个`can`中间件实现会更加简单。如下：
-
 
 ``` js{2}
 middleware: ['login', 'can:admin.update_article'],  // 拥有管理员身份，且有update_article的权限
@@ -260,16 +282,22 @@ middleware: ['login', 'ability:admin,update_article,requiredAll']
 
 ## 创建自已的中间件
     
+要完成自己的中间件，分为两步
+
+1. 书写中间件
+2. 注册中间件
+
 
 如果你需要创建属于自已的中间件，你只需要继承`MiddlewareHandle`类，如果你使用`typescript`书写，你选择实现`MiddlewareInterface`接口，以方便代码提示。
 
 下面是一个例子，用户必须完善某些信息之后，才可以进入页面进行操作。如下:
 
 ``` typescript{2}
+// src/access/middleware/complete-user-info.js
 import { MiddlewareHandle } from '@lywzx/vue.access.control';
 import MiddlewareInterface from '@lywzx/vue.access.control/dist/typings/interface/MiddlewareInterface';
 
-class CompleteUserInfo extend MiddlewareHandle implements MiddlewareInterface {
+export class CompleteUserInfo extend MiddlewareHandle implements MiddlewareInterface {
 
     public handle(next: (opt: boolean | any), { router, to, from, access }: MiddlewareHandleOptions) {
         const userInfo = access.getExtendInfo('userInfo');
@@ -285,7 +313,27 @@ class CompleteUserInfo extend MiddlewareHandle implements MiddlewareInterface {
 }
 ```
 
-### 关于中间件的运行模式
+下面，我们在路由中注册当前中间件
+
+```js
+import { 
+  CompleteUserInfo
+} from 'src/access/middleware/complete-user-info';
+import {
+  RouterMiddleware
+} from '@lywzx/vue.access.control';
+
+RouterMiddleware.middleWares.complete_school_info = CompleteUserInfo;
+```
+
+## 中间件运行及原理
+
+`VueAccessControl`路由中间件是基于`vue-router`的全局钩子`beforeEach`、`afterEach`。
+
+与路由自带钩子的运行模式不同，路由中间件，是顺序执行的，前面中间件只有执行成功后，后续的中间件才可以继续执行。内部执行是基于[`PipeLine.ts`](https://github.com/lywzx/vue.access.control/blob/master/src/class/PipeLine.ts)。
+
+
+## 关于中间件的运行模式
 
 为了方便使用，基于路由扩展了一个组件一个指令。`v-access-show`指令与`access-router-link`组件。它们有一个功能，基于当前路由是否有访问权限，来自动显示与隐藏；基实现原理时，在渲染这个页面时，会自动执行中间件逻辑。所以你希望你的中间件支持这个特性的话，需要在`terminal`模式下，不要弹出提示，也不要去处理路由的跳转等操作，仅在`next`方法回调中，回传`boolean`值。
 

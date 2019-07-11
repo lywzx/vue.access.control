@@ -7,7 +7,7 @@ const webpackDevMiddleware = require('webpack-dev-middleware');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const webpackHotMiddleware = require('webpack-hot-middleware');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const WebpackConfig = require('./webpack.config');
+const WebpackConfig = require('./webpack.dev.config');
 
 const app = express();
 const compiler = webpack(WebpackConfig);

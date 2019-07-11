@@ -1,18 +1,27 @@
 <template>
   <section>
-    <cm-header></cm-header>
     <router-view></router-view>
   </section>
 </template>
 <script>
-  import CmHeader from './views/Header/Index';
-
   export default {
     components: {
-      CmHeader
     }
   }
 </script>
-<style>
+<style lang="less">
+  // flex相关
+  .flex-auto {
+    display: flex;
 
+    > *:not(.flex-fixed) {
+      flex: 1;
+    }
+  }
+  .mt10 {
+    margin-top: 10px;
+  }
+  .mb10 {
+    margin-bottom: 10px;
+  }
 </style>

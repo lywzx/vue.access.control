@@ -1,12 +1,4 @@
 import { Vue as VueConstructor } from 'vue-property-decorator';
-import { Access } from './Access';
-
-interface VueExtendConstructor extends VueConstructor {
-  // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-  $options: any;
-  // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-  $access?: Access;
-}
 
 export default function(Vue: typeof VueConstructor) {
   const version = Number(Vue.version.split('.')[0]);
@@ -23,8 +15,8 @@ export default function(Vue: typeof VueConstructor) {
     };
   }
 
-  function accessInit(this: VueExtendConstructor) {
-    const options = this.$options;
+  function accessInit(this: VueConstructor) {
+    const options = this.$options as any;
     if (options.access) {
       this.$access = typeof options.access === 'function' ? options.access() : options.access;
     } else if (options.parent && options.parent.$access) {

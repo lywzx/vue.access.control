@@ -4,6 +4,9 @@ import { assert } from './util';
 import extend from 'lodash/extend';
 import pick from 'lodash/pick';
 import get from 'lodash/get';
+import map from 'lodash/map';
+import flatten from 'lodash/flatten';
+import uniqueId from 'lodash/uniqueId';
 import AccessOptions from './types/AccessOptions';
 import ApplyMixin from './mixin';
 import { User } from '@lywzx/access.control';
@@ -22,8 +25,9 @@ import AccessVmData from './types/AccessVmData';
 import AccessUserOptions from './types/AccessUserOptions';
 import LoginMiddleware from './router/middle/LoginMiddleware';
 import AccessRoleMiddleware from './router/middle/AccessRoleMiddleware';
+import { RawLocation, Route, VueRouter } from 'vue-router/types/router';
 
-
+const createUniqueId = () => uniqueId('vue.access.control-');
 let Vue: typeof VueConstructor;
 
 export class Access {
@@ -31,6 +35,13 @@ export class Access {
    * a vue instance
    */
   public _vm: VueConstructor;
+
+  /**
+   *
+   */
+  public get key() {
+    return this.accessData.key;
+  }
 
   /**
    *
@@ -85,6 +96,7 @@ export class Access {
     const { notLoginRoleName } = (this.options = extend({}, Access.defaultOptions));
     // create default _userInfo
     this.accessData = extend(Object.create(null), {
+      key: createUniqueId(),
       userOptions: {
         roles: [
           {
@@ -93,6 +105,7 @@ export class Access {
         ],
         permissions: [],
         userId: undefined,
+        isLogin: undefined,
       },
       extendData: {},
     }) as AccessVmData;
@@ -211,6 +224,37 @@ export class Access {
    */
   public isAbleTo(permission: StringOrStringArray, requiredAll: boolean = false): boolean {
     return this.can(permission, requiredAll);
+  }
+
+  /**
+   * has permission visit the page
+   * @param router
+   * @param to
+   * @param current
+   * @param append
+   */
+  public isCanTo(router: VueRouter, to: RawLocation, current?: Route, append: boolean = false): Promise<boolean> {
+    const resolvedRoute = router.resolve(to, current, append);
+    const matched = resolvedRoute.route.matched;
+    const middleware = flatten(map(matched, it => get(it, 'meta.middleware', [])));
+    const accessRouterMiddleware = this.accessRouterMiddleware;
+
+    assert(!!accessRouterMiddleware, 'the method isCanTo can be called when useRouter is true');
+
+    return new Promise((resolve, reject) => {
+      (accessRouterMiddleware as RouterMiddleware).runMiddleware(
+        {
+          middleware: middleware,
+          next: (result: boolean | void) => {
+            resolve(result === undefined || result === true);
+          },
+          terminal: true,
+        },
+        router,
+        resolvedRoute.route,
+        current
+      );
+    });
   }
 
   /**
@@ -396,6 +440,7 @@ function resetUserInfoVm(access: Access, accessVmData: AccessVmData): VueConstru
           // @ts-ignore
           this.user = new User(current.roles, current.permissions, current.userId);
 
+          this.access.key = createUniqueId();
           /*// resolve user login or logout event
           let currentUserId = current.userId;
           let lastUserId = last && last.userId;
@@ -457,7 +502,7 @@ export const install = function(_Vue: typeof VueConstructor, Options?: AccessOpt
     AccessRoleMiddleware.permissionDenyRedirectRoute = Access.defaultOptions.permissionDenyRedirectRoute;
   }
   ApplyMixin(Vue);
-  if (Options && Options.vueRouter) {
-    installFn(Vue);
-  }
+  //if (Options && Options.vueRouter) {
+  installFn(Vue, Access.defaultOptions.vueRouter);
+  //}
 };

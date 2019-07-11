@@ -8,6 +8,7 @@ const webpack = require('webpack');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
+  devtool: 'source-map',
   mode: 'development',
 
   entry: fs.readdirSync(__dirname).reduce((entries, dir) => {

@@ -129,7 +129,17 @@ only administrator can access
 }
 ```
 
-# More examples
+# Learn More
+
+[VueAccessControl document](https://www.lyblog.net/docs/vue.access.control/)
+
+# Examples preview
+
+[base access](https://www.lyblog.net/docs/vue.access.control/demo/base/index.html)
+
+[route middleware](https://www.lyblog.net/docs/vue.access.control/demo/route-middleware/index.html)
+
+# Examples codes
 
 [base access](https://github.com/lywzx/vue.access.control/tree/dev/examples/base)
 

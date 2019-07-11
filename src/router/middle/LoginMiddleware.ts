@@ -1,5 +1,7 @@
 import { RawLocation } from 'vue-router/types/router';
 import isFunction from 'lodash/isFunction';
+import isString from 'lodash/isString';
+import isObject from 'lodash/isObject';
 import { assert, isPromiseLike } from '../../util';
 import MiddlewareHandle from '../../class/MiddlewareHandle';
 import MiddlewareInterface from '../../interface/MiddlewareInterface';
@@ -26,25 +28,53 @@ export default class LoginMiddleware extends MiddlewareHandle implements Middlew
     // hack sometimes may can't get access instance, but i don't know why
     // @ts-ignore
     let loginStatus = access.isLogin();
+
+    if (this.isTerminal()) {
+      let ls = this.isOptional() || loginStatus === true;
+
+      return next(ls ? undefined : false);
+    }
+
     let nextAction = () => {
       let isLogin = access.isLogin();
       let isOptional = this.isOptional();
-      let isTerminal = this.isTerminal();
-      if (isTerminal || !isFunction(LoginMiddleware.notLoginWithTips) || !LoginMiddleware.loginName) {
-        next(isLogin || isOptional ? undefined : false);
-      } else if (isOptional || isLogin) {
-        next();
-      } else if (!isLogin) {
-        LoginMiddleware.notLoginWithTips(function(result: boolean) {
+      let nextBoolean = isLogin || isOptional ? undefined : false;
+      if (isFunction(LoginMiddleware.notLoginWithTips) && nextBoolean === false) {
+        return LoginMiddleware.notLoginWithTips(function(result: boolean | RawLocation) {
+          if (isString(result) || (isObject(result) && (result.path || result.name))) {
+            next(result);
+          }
           if (result) {
+            assert(
+              !!LoginMiddleware.loginName,
+              `the loginName is undefined, please define loginName when vue.use(VueAccessControl, {
+              loginName: \\\\...
+            })`
+            );
             next(LoginMiddleware.loginName);
+          } else if (from === router.currentRoute || !from.matched.length) {
+            assert(
+              !!LoginMiddleware.defaultRoute,
+              `the defaultRoute is undefined, please define defaultRoute when vue.use(VueAccessControl, {
+              defaultRoute: \\\\...
+            })`
+            );
+            next(LoginMiddleware.defaultRoute);
           } else {
-            next(from.matched.length || LoginMiddleware.defaultRoute === null ? false : LoginMiddleware.defaultRoute);
+            next(false);
           }
         });
-      } else {
-        next(false);
       }
+      if (nextBoolean === false) {
+        assert(
+          !!LoginMiddleware.loginName,
+          `the loginName is undefined, please define loginName when vue.use(VueAccessControl, {
+              loginName: \\\\...
+            })`
+        );
+        return next(LoginMiddleware.loginName);
+      }
+      next();
     };
     if (loginStatus === undefined) {
       let handleExtend = LoginMiddleware.handleExtend;
