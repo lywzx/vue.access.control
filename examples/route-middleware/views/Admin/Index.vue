@@ -14,7 +14,7 @@
             <a-menu-item key="3">nav 3</a-menu-item>
           </a-menu>
         </div>
-        <div class="flex-fixed" style="width: 140px;">
+        <div class="flex-fixed" style="width: 220px;">
           <header-avatar></header-avatar>
         </div>
       </a-layout-header>

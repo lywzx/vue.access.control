@@ -6,7 +6,7 @@
         <span>{{currUser.name}}</span>
       </template>
       <template v-else>
-        <span @click="setUser('administrator', '超级管理员')">点击立即登录</span>
+        <span @click="setUser(dropMenu[0][0], 'Administrator')">go to login</span>
       </template>
     </span>
     <a-menu style="width: 150px" slot="overlay" @click="handleMenuClick" v-if="$access.isLogin()">
@@ -29,6 +29,7 @@
     Icon as AIcon
   } from 'ant-design-vue';
   import { User } from '../../service/User';
+  import acl from '../../data/acl.json';
 
   export default {
     name: 'HeaderAvatar',
@@ -49,49 +50,15 @@
       },
       dropMenu () {
         return [
-          [
-            {
-              method: 'setUser',
-              role: 'administrator',
-              icon: 'user',
-              text: '超级管理员'
-            },
-            {
-              method: 'setUser',
-              role: 'common_administrator',
-              icon: 'user',
-              text: '普通管理员'
-            },
-            {
-              method: 'setUser',
-              role: 'common_audit',
-              icon: 'user',
-              text: '普通审核员'
-            },
-            {
-              method: 'setUser',
-              role: 'school_administrator',
-              icon: 'user',
-              text: '学校管理员'
-            },
-            {
-              method: 'setUser',
-              role: 'school_teacher',
-              icon: 'user',
-              text: '普通教师'
-            },
-            {
-              method: 'setUser',
-              role: 'school_student',
-              icon: 'user',
-              text: '普通学生'
-            }
-          ],
+          acl.map((it)=>({
+            method: "setUser",
+            ...it
+          })),
           [
             {
               method: 'logout',
               icon: 'poweroff',
-              text: '退出登录'
+              text: 'logout'
             }
           ]
         ];
@@ -100,31 +67,34 @@
     methods: {
       handleMenuClick(item) {
         const it = item.item.$attrs.item;
-        this[it.method](it.role, it.text);
+        this[it.method](it, it.text);
       },
       setUser( role, text ) {
         //this.$access.setRole(role);
         this.$access.setLoginUserInfo({
           isLogin: true,
           userId: 1,
-          roles: [role],
+          roles: [{
+            role: role.role,
+            permissions: role.permission
+          }],
           permissions: []
         });
         this.$access.setExtendInfo({
           userInfo: {
-            role: role,
+            role: role.text,
             avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
             name: text
           }
         });
+
         this.$nextTick(() => {
           this.$access.$emit('system:role:change');
         });
       },
       logout() {
         User.logout().then(() => {
-          this.$access.$emit('access:user:logout', true);
-          location.reload();
+          this.$access.$emit('access:user:logout', true, this.$router);
         });
       }
     }

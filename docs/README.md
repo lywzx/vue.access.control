@@ -18,7 +18,7 @@ When used with a module system, you must explicitly install VueAccessControl via
 import VueAccessControl from '@lywzx/vue.access.control';
 Vue.use(VueAccessControl, {});
 ```
-
+    
 You don't need to do this when using global script tags.
 
 
@@ -33,6 +33,7 @@ npm install
 npm run build
 ```
 
+
 ## use examples
 
 after you correct install. you should new a AccessControl.
@@ -46,7 +47,7 @@ import VueAccessControl, {
 import Vue from 'vue';
 
 Vue.use(VueAccessControl);
-const access = new VueAccessControl.Access();
+const access = new VueAccessControl();
 
 export default access;
 ```
@@ -73,6 +74,7 @@ in you component, `$access` variable you will visited.
 <!-- check permission -->
 <div v-if="$access.can('edit_post')"></div>
 ```
+    
 
 ### route middleware
 
@@ -83,7 +85,7 @@ Vue.use(VueAccessControl, {
     vueRouter: true
 });
 ```
-
+   
 the code should below `Vue.use(vueRouter)`
    
 add these code to you router
@@ -127,7 +129,13 @@ only administrator can access
 }
 ```
 
-# More examples
+# Examples preview
+
+[base access](https://www.lyblog.net/docs/vue.access.control/demo/base/index.html)
+
+[route middleware](https://www.lyblog.net/docs/vue.access.control/demo/route-middleware/index.html)
+
+# Examples codes
 
 [base access](https://github.com/lywzx/vue.access.control/tree/dev/examples/base)
 

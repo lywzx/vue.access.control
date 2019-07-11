@@ -5,13 +5,19 @@ import AccessRouterLinkDemo from '../views/Admin/Access/AccessRouterLinkDemo';
 import VAccessShowDemo from '../views/Admin/Access/VAccessShowDemo';
 import SystemSettings from '../views/Admin/System/Settings';
 import PagePlaceholder from '../views/Admin/Layout/PagePlaceholder';
+import HomePage from '../views/Home/Index';
 
 export default [
   {
-    path: '',
-    redirect: '/login',
+    name: 'home',
+    path: '/',
+    meta: {
+      title: 'Home Page',
+    },
+    component: HomePage,
   },
   {
+    name: 'user_login',
     path: '/login',
     component: Login,
     meta: {
@@ -85,7 +91,6 @@ export default [
         meta: {
           type: 'file',
           title: 'Permission Manage',
-          middleware: ['role:administrator'],
         },
         path: 'permission',
         component: Layout,
@@ -116,6 +121,7 @@ export default [
         meta: {
           type: 'file',
           title: 'Access Demo',
+          middleware: ['-login'],
         },
         path: 'demo',
         component: Layout,
@@ -124,7 +130,7 @@ export default [
             path: 'first',
             name: 'admin_access_demo1',
             meta: {
-              title: 'AccessRouterLink Demo',
+              title: 'Visible Demo',
               type: '',
             },
             component: AccessRouterLinkDemo,
@@ -133,8 +139,9 @@ export default [
             path: 'second',
             name: 'admin_access_demo2',
             meta: {
-              title: 'VAccessShow Demo',
+              title: 'Disabled Demo',
               type: '',
+              middleware: ['login?']
             },
             component: VAccessShowDemo,
           },
@@ -193,6 +200,7 @@ export default [
             path: 'settings',
             meta: {
               title: 'System Settings',
+              middleware: ['-login'],
             },
             component: SystemSettings,
           },

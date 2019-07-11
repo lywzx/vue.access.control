@@ -11,6 +11,18 @@
       >
         <a-radio-group v-decorator="['slideView', {rules:  [{ required: true, message: 'Please select!' }], initialValue: formDefaultValue['slideView']}]" :options="slideOptions"></a-radio-group>
       </a-form-item>
+      <a-form-item
+        label="Login Check With Tip"
+        v-bind="formItemLayout"
+      >
+        <a-radio-group v-decorator="['loginCheck', {rules:  [{ required: true, message: 'Please select!' }], initialValue: formDefaultValue['loginCheck']}]" :options="loginCheckOptions"></a-radio-group>
+      </a-form-item>
+      <a-form-item
+        label="Set User Roles"
+        v-bind="formItemLayout"
+      >
+        <a-checkbox-group v-decorator="['selectedRoles', {rules:  [{ required: true, message: 'Please select!' }], initialValue: formDefaultValue['selectedRoles']}]" :options="roleOptions"></a-checkbox-group>
+      </a-form-item>
       <a-form-item v-bind="tailFormItemLayout">
         <a-button
           type="primary"
@@ -41,6 +53,7 @@
   import {
     Settings
   } from '../../../service/Settings';
+  const acl = require('../../../data/acl.json');
 
   const residences = [{
     value: 'zhejiang',
@@ -122,11 +135,29 @@
             value: 1,
           },
           {
-            label: 'view all, disabled not permission menu',
+            label: 'view all',
             value: 2,
           }
         ];
       },
+      loginCheckOptions() {
+        return [
+          {
+            label: 'not login without tip',
+            value: 1,
+          },
+          {
+            label: 'not login with  tip',
+            value: 2,
+          }
+        ]
+      },
+      roleOptions() {
+        return acl.map((it) => ({
+          label: it.text,
+          value: it.role
+        }));
+      }
     },
     beforeCreate () {
       this.form = this.$form.createForm(this);

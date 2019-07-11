@@ -1,0 +1,51 @@
+[
+  {
+    "role": "administrator",
+    "icon": "user",
+    "text": "Administrator",
+    "permission": [
+      "edit_user", "create_user", "delete_user", "add_post", "edit_post", "audit_post"
+    ]
+  },
+  {
+    "role": "common_administrator",
+    "icon": "user",
+    "text": "CommonAdministrator",
+    "permission": [
+      "add_post", "edit_post"
+    ]
+  },
+  {
+    "role": "common_audit",
+    "icon": "user",
+    "text": "CommonAudit",
+    "permission": [
+      "audit_post"
+    ]
+  },
+  {
+    "role": "school_administrator",
+    "icon": "user",
+    "text": "SchoolAdministrator",
+    "permission": [
+      "create_class", "delete_class", "update_class"
+    ]
+  },
+  {
+    "role": "school_teacher",
+    "icon": "user",
+    "text": "SchoolTeacher",
+    "permission": [
+      "create_class",
+      "join_class"
+    ]
+  },
+  {
+    "role": "school_student",
+    "icon": "user",
+    "text": "SchoolStudent",
+    "permission": [
+      "join_class"
+    ]
+  }
+]

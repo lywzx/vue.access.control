@@ -2,7 +2,13 @@
   <a-card title="登录" class="tac root">
     <div class="login-container">
       <div>
-        <a-button type="primary" block @click="login">点击按钮，模拟登录</a-button>
+        <a-button type="primary" block @click="login">Mock Login Button</a-button>
+      </div>
+      <div class="mt20">
+        <router-link :to="{name: 'admin_system_settings'}">System Settings</router-link>
+      </div>
+      <div class="mt20">
+        <router-link :to="{name: 'admin_access_demo1'}">Access Demo1</router-link>
       </div>
     </div>
   </a-card>
@@ -24,7 +30,7 @@
         User.login({name: '', password: ''})
           .then(() => {
             this.$router.push({
-              name: 'admin_access_demo'
+              name: 'admin_permission'
             })
           });
       }
@@ -32,6 +38,9 @@
   }
 </script>
 <style type="text/css">
+  .mt20 {
+    margin-top: 20px;
+  }
   .tac {
     text-align: center;
   }
@@ -48,11 +57,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  .ant-card-head {
-
-  }
-  .ant-card-body .login-container {
-    flex: 1;
+    flex-direction: column;
   }
 </style>

@@ -42,10 +42,9 @@
     uniq,
     findIndex,
     find,
-    extend,
     each,
-    get,
   } from 'lodash';
+  import { Settings } from '../../../service/Settings';
 
   export default {
     components: {
@@ -64,7 +63,8 @@
         userRouterPermission: {
           isLoading: true,
           mapping: {}
-        }
+        },
+        settings: Settings.getSettings()
       }
     },
     computed: {
@@ -121,19 +121,22 @@
             return Object.assign(last, next);
           }, {});
         })
-      }
+      },
     },
     created() {
 
       this.initPagePermission();
 
 
-      this.$access.$on('system:role:change', () => {
-        this.initPagePermission();
-      });
+      this.$access.$on('system:role:change', this.initPagePermission);
+
+      this.$access.$on('access:user:logout', this.initPagePermission);
+
+      this.$access.$on('')
     },
     beforeDestroy() {
-      this.$access.$off('system:role:change');
+      this.$access.$off('system:role:change', this.initPagePermission);
+      this.$access.$off('access:user:logout', this.initPagePermission)
     }
   }
 </script>

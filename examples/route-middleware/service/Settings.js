@@ -2,6 +2,8 @@ import { extend } from 'lodash';
 
 const defaultSetting = {
   slideView: 1,
+  loginCheck: 2,
+  selectedRoles: ['administrator'],
 };
 export class Settings {
   /**

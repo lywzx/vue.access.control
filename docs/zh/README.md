@@ -13,6 +13,16 @@
 * . 中间件：基于`vue-router`的事件钩子，实现了路由中间件功能，可以方便在路由中，鉴权。
 * . 事件：除了VueAccessControl提供的部分默认的事件外，你也可以把事件绑定在`$access`实例上。它提供了`VueEventBus`类似的功能。
 
+## 在线预览
+[base access](https://www.lyblog.net/docs/vue.access.control/demo/base/index.html)
+
+[route middleware](https://www.lyblog.net/docs/vue.access.control/demo/route-middleware/index.html)
+
+## 示例源码
+[base access](https://github.com/lywzx/vue.access.control/tree/dev/examples/base)
+
+[route middleware](https://github.com/lywzx/vue.access.control/tree/dev/examples/route-middleware)
+
 ## TODO 
 
 * `ssr`支持及完善的功能测试

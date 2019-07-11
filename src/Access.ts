@@ -6,6 +6,7 @@ import pick from 'lodash/pick';
 import get from 'lodash/get';
 import map from 'lodash/map';
 import flatten from 'lodash/flatten';
+import uniqueId from 'lodash/uniqueId';
 import AccessOptions from './types/AccessOptions';
 import ApplyMixin from './mixin';
 import { User } from '@lywzx/access.control';
@@ -26,6 +27,7 @@ import LoginMiddleware from './router/middle/LoginMiddleware';
 import AccessRoleMiddleware from './router/middle/AccessRoleMiddleware';
 import { RawLocation, Route, VueRouter } from 'vue-router/types/router';
 
+const createUniqueId = () => uniqueId('vue.access.control-');
 let Vue: typeof VueConstructor;
 
 export class Access {
@@ -33,6 +35,13 @@ export class Access {
    * a vue instance
    */
   public _vm: VueConstructor;
+
+  /**
+   *
+   */
+  public get key() {
+    return this.accessData.key;
+  }
 
   /**
    *
@@ -87,6 +96,7 @@ export class Access {
     const { notLoginRoleName } = (this.options = extend({}, Access.defaultOptions));
     // create default _userInfo
     this.accessData = extend(Object.create(null), {
+      key: createUniqueId(),
       userOptions: {
         roles: [
           {
@@ -430,6 +440,7 @@ function resetUserInfoVm(access: Access, accessVmData: AccessVmData): VueConstru
           // @ts-ignore
           this.user = new User(current.roles, current.permissions, current.userId);
 
+          this.access.key = createUniqueId();
           /*// resolve user login or logout event
           let currentUserId = current.userId;
           let lastUserId = last && last.userId;

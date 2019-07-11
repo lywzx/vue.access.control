@@ -1,3 +1,8 @@
+import { Settings } from './Settings';
+import { keyBy } from 'lodash';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const acl = require('../data/acl.json');
+
 export class User {
   /**
    *
@@ -24,11 +29,17 @@ export class User {
 
   static freshUserInfo(token) {
     return new Promise(function(resolve, reject) {
+      const settings = Settings.getSettings();
+      const aclKeyBy = keyBy(acl, 'role');
+
       const userInfo = {
         id: 1,
-        roles: ['administrator'],
+        roles: settings.selectedRoles.map(role => ({
+          role: role,
+          permissions: aclKeyBy[role]['permission'],
+        })),
         avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
-        name: '超级管理员',
+        name: 'administrator',
       };
 
       setTimeout(() => {
