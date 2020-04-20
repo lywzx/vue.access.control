@@ -100,5 +100,5 @@ export default {
     } else {
       fu(value as boolean);
     }
-  }
+  },
 };

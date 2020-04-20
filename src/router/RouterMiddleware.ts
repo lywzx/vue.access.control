@@ -61,7 +61,7 @@ export default class RouterMiddleware {
     let that = this;
     let middleWares = this.getCurrentMiddleWares(options.middleware);
     this.queue.addCommand(
-      new class RouterMiddleQueueTask extends QueueTask {
+      new (class RouterMiddleQueueTask extends QueueTask {
         public handle(next: Function): any {
           new RouterMiddlewarePipeline(RouterMiddleware.middleWares)
             .through(middleWares, options.terminal || false, [
@@ -77,7 +77,7 @@ export default class RouterMiddleware {
               next();
             });
         }
-      }()
+      })()
     );
   }
 

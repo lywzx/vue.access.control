@@ -1,7 +1,15 @@
 # Introduction
 
-`vue access control` is base on the package  [`@lywzx/access.control`](https://github.com/lywzx/access.control) for vue application access control.
+`vue access control` is base on the package [`@lywzx/access.control`](https://github.com/lywzx/access.control) for vue application access control.
 
+[![Build Status](https://img.shields.io/travis/lywzx/vue.access.control/master.svg)](https://travis-ci.org/lywzx/vue.access.control)
+[![codecov](https://codecov.io/gh/lywzx/vue.access.control/branch/master/graph/badge.svg)](https://codecov.io/gh/lywzx/vue.access.control)
+[![NPM version](https://img.shields.io/npm/v/@lywzx/vue.access.control.svg?style=flat-square)](https://www.npmjs.com/package/@lywzx/vue.access.control)
+[![NPM downloads](https://img.shields.io/npm/dm/@lywzx/vue.access.control.svg?style=flat-square)](https://www.npmjs.com/package/@lywzx/vue.access.control)
+[![Known Vulnerabilities](https://snyk.io/test/github/lywzx/vue.access.control/badge.svg?targetFile=package.json)](https://snyk.io/test/github/lywzx/vue.access.control?targetFile=package.json)
+[![License](https://img.shields.io/npm/l/@lywzx/vue.access.control.svg?sanitize=true)](https://www.npmjs.com/package/@lywzx/vue.access.control)
+[![Dependency Status](https://david-dm.org/lywzx/vue.access.control.svg)](https://david-dm.org/lywzx/vue.access.control)
+[![devDependencies Status](https://david-dm.org/lywzx/vue.access.control/dev-status.svg)](https://david-dm.org/lywzx/vue.access.control?type=dev)
 
 # Getting Started
 
@@ -18,9 +26,8 @@ When used with a module system, you must explicitly install VueAccessControl via
 import VueAccessControl from '@lywzx/vue.access.control';
 Vue.use(VueAccessControl, {});
 ```
-    
-You don't need to do this when using global script tags.
 
+You don't need to do this when using global script tags.
 
 ## Dev Build
 
@@ -33,17 +40,13 @@ npm install
 npm run build
 ```
 
-
 ## use examples
 
 after you correct install. you should new a AccessControl.
 
 ```js
 // src/access/index.js
-import VueAccessControl, {
-  LoginMiddleware,
-  RouterMiddleware
-} from '@lywzx/vue.access.control';
+import VueAccessControl, { LoginMiddleware, RouterMiddleware } from '@lywzx/vue.access.control';
 import Vue from 'vue';
 
 Vue.use(VueAccessControl);
@@ -59,8 +62,8 @@ then you change root vue component.
 import access from './access/index';
 
 new Vue({
-    access
-}).$mount('#app')
+  access,
+}).$mount('#app');
 ```
 
 in you component, `$access` variable you will visited.
@@ -74,7 +77,6 @@ in you component, `$access` variable you will visited.
 <!-- check permission -->
 <div v-if="$access.can('edit_post')"></div>
 ```
-    
 
 ### route middleware
 
@@ -82,12 +84,12 @@ if you has used `vue-router`, you may need router middleware for you application
 
 ```js
 Vue.use(VueAccessControl, {
-    vueRouter: true
+  vueRouter: true,
 });
 ```
-   
+
 the code should below `Vue.use(vueRouter)`
-   
+
 add these code to you router
 
 ```js
@@ -97,7 +99,7 @@ import { afterEach, beforeEach } from '@lywzx/vue.access.control';
 //...
 
 const Router = new VueRouter({
-    // ...
+  // ...
 });
 
 // add code like this
