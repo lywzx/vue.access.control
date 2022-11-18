@@ -64,7 +64,7 @@
     "eslint-plugin-typescript": "^0.14.0",
     "eslit": "^6.0.0",
     "express": "^4.17.1",
-    "html-webpack-plugin": "^3.2.0",
+    "html-webpack-plugin": "^5.5.0",
     "less": "^3.11.1",
     "less-loader": "^5.0.0",
     "lodash": "^4.17.15",
