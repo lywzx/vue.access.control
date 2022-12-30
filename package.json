@@ -68,7 +68,7 @@
     "less": "^3.11.1",
     "less-loader": "^5.0.0",
     "lodash": "^4.17.15",
-    "mocha": "^6.2.3",
+    "mocha": "^10.2.0",
     "rollup": "^2.23.0",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-dts": "~3.0.1",
